@@ -1,26 +1,18 @@
-import React from 'react';
-import logo from './logo.svg';
-import './App.css';
+import React from 'react'
+import './App.css'
+import ModelProvider from './components/ModelProvider'
+import AppCanvas from './components/AppCanvas'
+import TimeManager from './components/TimeManager'
 
 function App() {
   return (
-    <div className="App">
-      <header className="App-header">
-        <img src={logo} className="App-logo" alt="logo" />
-        <p>
-          Edit <code>src/App.js</code> and save to reload.
-        </p>
-        <a
-          className="App-link"
-          href="https://reactjs.org"
-          target="_blank"
-          rel="noopener noreferrer"
-        >
-          Learn React
-        </a>
-      </header>
+    <div className='App'>
+      <ModelProvider>
+        <TimeManager />
+        <AppCanvas></AppCanvas>
+      </ModelProvider>
     </div>
-  );
+  )
 }
 
-export default App;
+export default App
