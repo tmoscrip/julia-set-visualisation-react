@@ -2,11 +2,8 @@ import { math } from './math'
 import { colour } from './colour'
 
 // GLSL 'for' loops can only be indexed up to a constant value
-//
 // Passing in the max iteration count through a uniform encounters an error
-//
 // Therefore this function constructs a constant value definition
-
 function setMaxIterations(val) {
   return `#define maxIterations ${val}`
 }
@@ -58,6 +55,7 @@ vec3 julia(vec2 z, vec2 c) {
   return hsv2rgb(vec3(hue, sat, val));
 }
 `
+
 // Smooth colouring function
 // http://linas.org/art-gallery/escape/escape.html
 // https://en.wikipedia.org/wiki/Mandelbrot_set#Continuous_(smooth)_coloring
