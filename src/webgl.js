@@ -83,8 +83,8 @@ function createProgram(gl, fragCode) {
   return shaderProgram
 }
 
-function setUniforms(shaderProgram, juliaData) {
-  const { canvas, gl, julia, time, viewport } = juliaData
+function setUniforms(shaderProgram, ctx) {
+  const { canvasRef, gl, julia, time, viewport } = ctx
   const { escapeRadius, maxIterations } = julia
 
   const escapeRadiusUniform = gl.getUniformLocation(shaderProgram, 'u_escapeRadius')
@@ -94,10 +94,10 @@ function setUniforms(shaderProgram, juliaData) {
   gl.uniform1i(maxIterationsUniform, maxIterations)
 
   const resolutionUniform = gl.getUniformLocation(shaderProgram, 'u_resolution')
-  gl.uniform2fv(resolutionUniform, [canvas.width, canvas.height])
+  gl.uniform2fv(resolutionUniform, [canvasRef.width, canvasRef.height])
 
   const startedAtUniform = gl.getUniformLocation(shaderProgram, 'u_time')
-  const secondsSinceStart = (getMillisElapsed(time) / 1000) * time.timeScale
+  const secondsSinceStart = (getMillisElapsed(time.startedAt, time.pauseDuration) / 1000) * time.timeScale
   gl.uniform1f(startedAtUniform, secondsSinceStart)
 
   const widthUniform = gl.getUniformLocation(shaderProgram, 'u_width')
@@ -113,14 +113,12 @@ function setUniforms(shaderProgram, juliaData) {
   gl.uniform1f(yTranslateUniform, viewport.translate.y)
 }
 
-function getMillisElapsed(time) {
-  return Date.now() - time.startedAt - time.pauseDuration
+function getMillisElapsed(startedAt, pauseDuration) {
+  return Date.now() - startedAt - pauseDuration
 }
 
-export function glTest(juliaData) {
-  const { canvas, gl } = juliaData
-
-  console.log(juliaData)
+export function glDrawFrame(ctx) {
+  const { canvasRef, gl } = ctx
 
   // Only continue if WebGL is available and working
   if (gl === null) {
@@ -129,13 +127,12 @@ export function glTest(juliaData) {
   }
 
   // Construct the final version of the fragment shader code
-  const fragCode = buildFragCode(juliaData.julia.maxIterations)
-  console.log(juliaData.julia.maxIterations)
+  const fragCode = buildFragCode(ctx)
 
   const vertexBuffer = bindVertices(gl)
   const indexBuffer = bindIndices(gl)
   const shaderProgram = createProgram(gl, fragCode)
-  setUniforms(shaderProgram, juliaData)
+  setUniforms(shaderProgram, ctx)
 
   /*======= Associating shaders to buffer objects =======*/
   // Bind vertex buffer object
@@ -164,7 +161,7 @@ export function glTest(juliaData) {
   gl.clear(gl.COLOR_BUFFER_BIT)
 
   // Set the view port
-  gl.viewport(0, 0, canvas.width, canvas.height)
+  gl.viewport(0, 0, canvasRef.width, canvasRef.height)
 
   // Draw the triangles
   gl.drawElements(gl.TRIANGLES, indices.length, gl.UNSIGNED_SHORT, 0)

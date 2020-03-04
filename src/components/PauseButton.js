@@ -1,9 +1,12 @@
-import React, { useContext, useState } from 'react'
+import React, { useContext } from 'react'
 import { ShaderContext } from './ModelProvider'
 
 export default function PauseButton() {
   const ctx = useContext(ShaderContext)
-  const [text, setText] = useState('pause')
+
+  const [paused, setPaused] = ctx.time.paused
+  const [lastPausedAt, setLastPausedAt] = ctx.time.lastPausedAt
+  const setPauseDuration = ctx.time.pauseDuration[1]
 
   const style = {
     margin: '0 auto',
@@ -13,24 +16,26 @@ export default function PauseButton() {
   }
 
   function pause() {
-    ctx.time.paused = true
-    setText('resume')
-    ctx.time.lastPausedAt = Date.now()
+    setPaused(true)
+    setLastPausedAt(Date.now())
   }
 
   function resume() {
-    ctx.time.paused = false
-    setText('pause')
-    ctx.time.pauseDuration += (Date.now() - ctx.time.lastPausedAt)
+    setPaused(false)
+    setPauseDuration(pauseDuration => pauseDuration + (Date.now() - lastPausedAt))
   }
 
   function handleClick(event) {
-    if (ctx.time.paused === true) {
+    if (paused === true) {
       resume()
-    } else if (ctx.time.paused === false) {
+    } else if (paused === false) {
       pause()
     }
   }
 
-  return <button onClick={handleClick} style={style}>{text}</button>
+  return (
+    <button onClick={handleClick} style={style}>
+      {paused ? 'resume' : 'paused'}
+    </button>
+  )
 }

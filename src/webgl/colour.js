@@ -15,21 +15,21 @@ vec3 hsv2rgb(vec3 c) {
 const huefn = `
 float huefn(float iterations) {
   float max_iter = float(maxIterations);
-  return .3 + 10.*(iterations / max_iter);
+  return .3 + .6*(iterations / max_iter);
 }
 `
 
 const satfn = `
 float satfn(float iterations) {
   float max_iter = float(maxIterations);
-  return .1 + 3.*(iterations / max_iter);
+  return .1 + 1.*(iterations / max_iter);
 }
 `
 
 const valfn = `
 float valfn(float iterations) {
   float max_iter = float(maxIterations);
-  return .1 + 3.*(iterations / max_iter);
+  return .1 + 1.*(iterations / max_iter);
 }
 `
 

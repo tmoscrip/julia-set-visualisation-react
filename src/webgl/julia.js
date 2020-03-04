@@ -4,8 +4,12 @@ import { colour } from './colour'
 // GLSL 'for' loops can only be indexed up to a constant value
 // Passing in the max iteration count through a uniform encounters an error
 // Therefore this function constructs a constant value definition
-function setMaxIterations(val) {
+function maxIterations(val) {
   return `#define maxIterations ${val}`
+}
+
+function cValue(c) {
+  return `vec2 c = vec2(${c.x}, ${c.y});`
 }
 
 const uniforms = `
@@ -33,8 +37,6 @@ vec3 julia(vec2 z, vec2 c) {
 
   for (int i = 0; i <= maxIterations; i++) {
     z = complexPower(z, vec2(2, 0));
-    // z = complexAdd(z, complexPower(z, vec2(2, 0)));
-    // z = complexAdd(z, complexPower(z, vec2(5, 0)));
     z = complexAdd(z, c);
     iters = i;
     if (complexMag(z) > u_escapeRadius) break;
@@ -77,19 +79,14 @@ float smoothIterations(vec2 z, int iterations) {
 //
 // JULIA MAIN FUNCTION
 //
-const main = `
+const main = ctx => `
 void main(void) {
-  // float XSIZE = u_width + 3.*(1. + cos(u_time));
-  // float YSIZE = u_height + 3.*(1. + cos(u_time));
   float XSIZE = u_width;
   float YSIZE = u_height;
   float XT = u_translatex;
   float YT = u_translatey;
 
-  vec2 c = vec2(
-    .1 + sin(2.11*u_time) / 33. + cos(1.13*u_time) / 12. + cos(7.*u_time) / 32., 
-    -.556 + cos(.77*u_time) / 33. - sin(.13*u_time) / 44. + cos(7.*u_time) / 32.
-  );
+  ${cValue(ctx.julia.c)}
 
   // Normalized pixel coordinates (from 0 to 1)
   vec2 uv = gl_FragCoord.xy / u_resolution.xy;
@@ -103,15 +100,15 @@ void main(void) {
 }
 `
 
-export const buildFragCode = maxIterations => `
+export const buildFragCode = ctx => `
 ${headers}
-${setMaxIterations(maxIterations)}
+${maxIterations(ctx.julia.maxIterations)}
 ${uniforms}
 ${math}
 ${colour}
 ${smoothIterations}
 ${julia}
-${main}
+${main(ctx)}
 `
 
 export const vertCode = `

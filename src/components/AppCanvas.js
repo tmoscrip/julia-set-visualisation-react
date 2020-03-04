@@ -20,8 +20,8 @@ AppCanvas.propTypes = {
 }
 
 AppCanvas.defaultProps = {
-  width: 1100,
-  height: 1100,
+  width: 800,
+  height: 800,
 }
 
 export default AppCanvas

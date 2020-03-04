@@ -1,13 +1,20 @@
-import React, { useContext } from 'react'
+import React from 'react'
 import MaxIterations from './MaxIterations'
-import { ShaderContext } from '../ModelProvider';
+import Viewport from './Viewport'
+import ComplexPoly from './ComplexPoly'
 
-function ControlPanel(props) {
-  const ctx= useContext(ShaderContext)
+function ControlPanel() {
+  const style = {
+    margin: '0 auto',
+    display: 'block',
+    width: '32rem'
+  }
 
   return (
-    <div>
-      <MaxIterations label='max iterations'/>
+    <div style={style}>
+      <MaxIterations />
+      <Viewport />
+      <ComplexPoly />
     </div>
   )
 }
