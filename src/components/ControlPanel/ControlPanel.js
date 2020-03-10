@@ -5,17 +5,27 @@ import ComplexPoly from './ComplexPoly'
 import CollapsiblePanel from '../CollapsiblePanel'
 import PauseButton from '../PauseButton'
 import CValue from './CValue'
+import PresetSaver from '../PresetSaver'
+
+function Spacer({size}) {
+  return <div style={{marginBottom: size}} />
+}
 
 function ControlPanel({ children }) {
   // TODO: Convert integer field values to glsl floats
 
   return (
     <CollapsiblePanel styleClass='control-panel'>
-      <PauseButton />
+      <PresetSaver />
+      <Spacer size='3em'/>
       <MaxIterations />
+      <Spacer size='3em'/>
       <Viewport />
+      <Spacer size='3em'/>
       <CValue />
       <ComplexPoly />
+      <Spacer size='3em'/>
+      <PauseButton />
       {children}
     </CollapsiblePanel>
   )

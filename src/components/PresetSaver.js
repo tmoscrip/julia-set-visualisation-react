@@ -1,11 +1,14 @@
-import React, { useState, useEffect } from 'react'
-import { contextToValueObject } from './ModelProvider'
+import React, { useState, useEffect, useContext } from 'react'
+import { contextToValueObject, ShaderContext, loadObjectIntoContext } from './ModelProvider'
+import LabelledField from './ControlPanel/LabelledField'
 
-function makePresetObject(name, julia) {
-  const juliaObj = contextToValueObject(julia)
+function makePresetObject(name, ctx) {
+  const julia = contextToValueObject(ctx.julia)
+  const viewport = contextToValueObject(ctx.viewport)
   return {
-    name: name,
-    julia: juliaObj
+    name,
+    julia,
+    viewport
   }
 }
 
@@ -24,19 +27,50 @@ function getPresetArray() {
   return presetArray ? JSON.parse(presetArray) : []
 }
 
-function setPresetArray(preset) {
+function addPresetToArray(preset) {
   const array = getPresetArray()
   array.push(preset)
   localStorage.setItem('presets', JSON.stringify(array))
 }
 
 export default function PresetSaver() {
+  const ctx = useContext(ShaderContext)
+
+  const [selectedPreset, setSelectedPreset] = useState('')
   const [presetName, setPresetName] = useState('')
   const [presetsList, setPresetsList] = useState([])
 
   const updatePresetsList = () => {
     const presets = getPresetArray()
     setPresetsList(presets)
+  }
+
+  function savePreset() {
+    const presetObject = makePresetObject(presetName, ctx)
+    console.log(presetObject)
+    if (namedPresetExists(presetObject)) {
+      // TODO: ask to overwrite
+    }
+    addPresetToArray(presetObject)
+    updatePresetsList()
+  }
+
+  function loadPreset() {
+    console.log('load preset')
+    const presetArray = getPresetArray()
+    // TODO: access presetArray by key identifier
+    for (const i in presetArray) {
+      const preset = presetArray[i]
+      if (preset.name === selectedPreset) {
+        console.log('loading into conte')
+        loadObjectIntoContext(preset.julia, ctx.julia)
+        loadObjectIntoContext(preset.viewport, ctx.viewport)
+      }
+    }
+  }
+
+  function updateSelection(e) {
+    setSelectedPreset(e.target.value)
   }
 
   // Initial select element population
@@ -46,14 +80,23 @@ export default function PresetSaver() {
 
   return (
     <div>
-      <input></input>
-      <select>
+      <LabelledField label='Preset name' inputValue={presetName} setInputValue={setPresetName} />
+      <select value={selectedPreset} onChange={updateSelection} className='panel-input preset-selector'>
+        {presetsList.length === 0 ? <option>No presets saved</option> : null}
         {presetsList.map(item => {
-          return <option value={item.name}>{item.name}</option>
+          return (
+            <option key={item.name} value={item.name}>
+              {item.name}
+            </option>
+          )
         })}
       </select>
-      <button>Save</button>
-      <button>Load</button>
+      <button className='panel-input' onClick={savePreset}>
+        Save
+      </button>
+      <button className='panel-input' onClick={loadPreset}>
+        Load
+      </button>
     </div>
   )
 }

@@ -23,7 +23,7 @@ const isUseState = item => {
 // Flattens out a object from the state context
 // Keeps object structure, but converts [state, setState]
 // Arrays to just the state value
-export const contextToValueObject = function(obj) {
+export function contextToValueObject(obj) {
   // B
   const namesObject = {}
 
@@ -36,6 +36,19 @@ export const contextToValueObject = function(obj) {
   }
 
   return namesObject
+}
+
+export function loadObjectIntoContext(obj, ctx) {
+  for (const item in obj) {
+    if (isUseState(ctx[item])) {
+      // Call setState in ctx for each key in obj
+      const setState = ctx[item][1]
+      setState(obj[item])
+    } else {
+      // Recurse
+      loadObjectIntoContext(obj[item], ctx[item])
+    }
+  }
 }
 
 function ModelProvider({ children }) {
