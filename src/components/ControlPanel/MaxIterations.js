@@ -6,5 +6,7 @@ export default function MaxIterations() {
   const ctx = useContext(ShaderContext)
   const [inputValue, setInputValue] = ctx.julia.maxIterations
 
-  return <LabelledField label='Max Iterations' inputValue={inputValue} setInputValue={setInputValue} />
+  const helpText = 'Max iterations'
+
+  return <LabelledField label='Max Iterations' helpText={helpText} inputValue={inputValue} setInputValue={setInputValue} />
 }

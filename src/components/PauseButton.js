@@ -8,13 +8,6 @@ export default function PauseButton() {
   const [lastPausedAt, setLastPausedAt] = ctx.time.lastPausedAt
   const setPauseDuration = ctx.time.pauseDuration[1]
 
-  const style = {
-    margin: '0 auto',
-    display: 'block',
-    height: '4rem',
-    width: '8rem'
-  }
-
   function pause() {
     setPaused(true)
     setLastPausedAt(Date.now())
@@ -25,7 +18,7 @@ export default function PauseButton() {
     setPauseDuration(pauseDuration => pauseDuration + (Date.now() - lastPausedAt))
   }
 
-  function handleClick(event) {
+  function togglePause(event) {
     if (paused === true) {
       resume()
     } else if (paused === false) {
@@ -34,8 +27,8 @@ export default function PauseButton() {
   }
 
   return (
-    <button onClick={handleClick} style={style}>
-      {paused ? 'resume' : 'paused'}
+    <button onClick={togglePause} className='pause-button'>
+      {paused ? 'Resume' : 'Pause'}
     </button>
   )
 }

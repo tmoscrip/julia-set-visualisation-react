@@ -8,8 +8,17 @@ function maxIterations(val) {
   return `#define maxIterations ${val}`
 }
 
-function cValue(c) {
-  return `vec2 c = vec2(${c.x}, ${c.y});`
+function cValue({x, y}) {
+  return `vec2 c = vec2(${x}, ${y});`
+}
+
+function viewport({width, height, translate}) {
+  return `
+  float XSIZE = ${width};
+  float YSIZE = ${height};
+  float XT = ${translate.x};
+  float YT = ${translate.y};
+  `
 }
 
 const uniforms = `
@@ -81,12 +90,10 @@ float smoothIterations(vec2 z, int iterations) {
 //
 const main = ctx => `
 void main(void) {
-  float XSIZE = u_width;
-  float YSIZE = u_height;
-  float XT = u_translatex;
-  float YT = u_translatey;
+  ${viewport(ctx.viewport)}
 
   ${cValue(ctx.julia.c)}
+
 
   // Normalized pixel coordinates (from 0 to 1)
   vec2 uv = gl_FragCoord.xy / u_resolution.xy;

@@ -6,5 +6,7 @@ export default function ComplexPoly() {
   const ctx = useContext(ShaderContext)
   const [inputValue, setInputValue] = ctx.julia.complexPoly
 
-  return <LabelledField label='CPQ' inputValue={inputValue} setInputValue={setInputValue} />
+  const helpText = 'Complex poly quadratic'
+
+  return <LabelledField label='CPQ' helpText={helpText} inputValue={inputValue} setInputValue={setInputValue} />
 }

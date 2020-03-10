@@ -2,20 +2,22 @@ import React from 'react'
 import MaxIterations from './MaxIterations'
 import Viewport from './Viewport'
 import ComplexPoly from './ComplexPoly'
+import CollapsiblePanel from '../CollapsiblePanel'
+import PauseButton from '../PauseButton'
+import CValue from './CValue'
 
-function ControlPanel() {
-  const style = {
-    margin: '0 auto',
-    display: 'block',
-    width: '32rem'
-  }
+function ControlPanel({ children }) {
+  // TODO: Convert integer field values to glsl floats
 
   return (
-    <div style={style}>
+    <CollapsiblePanel styleClass='control-panel'>
+      <PauseButton />
       <MaxIterations />
       <Viewport />
+      <CValue />
       <ComplexPoly />
-    </div>
+      {children}
+    </CollapsiblePanel>
   )
 }
 

@@ -119,6 +119,7 @@ function getMillisElapsed(startedAt, pauseDuration) {
 
 export function glDrawFrame(ctx) {
   const { canvasRef, gl } = ctx
+  console.log(canvasRef)
 
   // Only continue if WebGL is available and working
   if (gl === null) {

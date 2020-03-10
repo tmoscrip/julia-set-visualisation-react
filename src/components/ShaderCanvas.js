@@ -1,42 +1,11 @@
 import React, { useRef, useEffect, useContext, useState } from 'react'
 import PropTypes from 'prop-types'
 import { glDrawFrame } from '../webgl'
-import { ShaderContext } from './ModelProvider'
+import { ShaderContext, contextToValueObject } from './ModelProvider'
 import DebugFrame from './DebugFrame'
+import ControlPanel from './ControlPanel/ControlPanel'
 
-/*
-  Take object from context and extract the values for each setState array
-  Recurse down if possilble and maintain k:v structure
-*/
 
-// Check to see if array has useState set function within
-const hasSetState = item => {
-  return typeof item[1] === 'function' && item[1].name === 'bound dispatchAction'
-}
-
-// Is the item a useState array?
-// Perform checks on requirements for hasSetState beforehand
-const isUseState = item => {
-  return Array.isArray(item) && item.length === 2 && hasSetState(item)
-}
-
-// Flattens out a object from the state context
-// Keeps object structure, but converts [state, setState]
-// Arrays to just the state value
-const contextToValueObject = function(obj) {
-  // B
-  const namesObject = {}
-
-  for (const item in obj) {
-    if (isUseState(obj[item])) {
-      namesObject[item] = obj[item][0]
-    } else {
-      namesObject[item] = contextToValueObject(obj[item])
-    }
-  }
-
-  return namesObject
-}
 
 export default function ShaderCanvas({ width, height }) {
   const ctx = useContext(ShaderContext)
@@ -79,10 +48,12 @@ export default function ShaderCanvas({ width, height }) {
   }, [ctx, paused, gl])
 
   return (
-    <div>
-      <canvas className='glcanvas' ref={canvasRef} width={width} height={height} />
-      <DebugFrame frameCount={frameCount} frameTime={Date.now() - lastFrameTime} />
-    </div>
+    <>
+      <canvas className='glcanvas' ref={canvasRef} />
+      <ControlPanel>
+        <DebugFrame frameCount={frameCount} frameTime={Date.now() - lastFrameTime} />
+      </ControlPanel>
+    </>
   )
 }
 
