@@ -18,7 +18,7 @@ export default function PauseButton() {
     setPauseDuration(pauseDuration => pauseDuration + (Date.now() - lastPausedAt))
   }
 
-  function togglePause(event) {
+  function togglePause() {
     if (paused === true) {
       resume()
     } else if (paused === false) {

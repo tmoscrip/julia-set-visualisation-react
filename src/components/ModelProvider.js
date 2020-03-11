@@ -24,7 +24,6 @@ const isUseState = item => {
 // Keeps object structure, but converts [state, setState]
 // Arrays to just the state value
 export function contextToValueObject(obj) {
-  // B
   const namesObject = {}
 
   for (const item in obj) {

@@ -49,7 +49,7 @@ export default function ShaderCanvas({ width, height }) {
 
   return (
     <>
-      <canvas className='glcanvas' ref={canvasRef} />
+      <canvas className='glcanvas' width='1000' height='1000' ref={canvasRef} />
       <ControlPanel>
         <DebugFrame frameCount={frameCount} frameTime={Date.now() - lastFrameTime} />
       </ControlPanel>
