@@ -1,21 +1,18 @@
 import React, { useRef, useEffect, useContext, useState } from 'react'
-import PropTypes from 'prop-types'
 import { glDrawFrame } from '../webgl'
 import { ShaderContext, contextToValueObject } from './ModelProvider'
 import DebugFrame from './DebugFrame'
 import ControlPanel from './ControlPanel/ControlPanel'
 
-
-
-export default function ShaderCanvas({ width, height }) {
+export default function ShaderCanvas() {
   const ctx = useContext(ShaderContext)
 
-  const setCanvasRef = ctx.canvasRef[1] // Second item in setState array
+  const [, setCanvasRef] = ctx.canvasRef
   const [gl, setGl] = ctx.gl
-  const paused = ctx.time.paused[0]
+  const [paused] = ctx.time.paused
 
   const canvasRef = useRef()
-  const requestRef = useRef()
+  const animateRef = useRef()
   const [frameCount, setFrameCount] = useState(0)
   const [lastFrameTime, setLastFrameTime] = useState(0)
 
@@ -35,16 +32,15 @@ export default function ShaderCanvas({ width, height }) {
         glDrawFrame(glObj)
         setFrameCount(frameCount => frameCount + 1)
       }
-
       // The frame request runs itself recursively
-      requestRef.current = requestAnimationFrame(animate)
+      animateRef.current = requestAnimationFrame(animate)
     }
 
     // Start frame requests
-    requestRef.current = requestAnimationFrame(animate)
+    animateRef.current = requestAnimationFrame(animate)
 
     // Return cleanup as callback
-    return () => cancelAnimationFrame(requestRef.current)
+    return () => cancelAnimationFrame(animateRef.current)
   }, [ctx, paused, gl])
 
   return (
@@ -55,9 +51,4 @@ export default function ShaderCanvas({ width, height }) {
       </ControlPanel>
     </>
   )
-}
-
-ShaderCanvas.propTypes = {
-  width: PropTypes.number,
-  height: PropTypes.number
 }

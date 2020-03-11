@@ -6,7 +6,7 @@ export default function PauseButton() {
 
   const [paused, setPaused] = ctx.time.paused
   const [lastPausedAt, setLastPausedAt] = ctx.time.lastPausedAt
-  const setPauseDuration = ctx.time.pauseDuration[1]
+  const [, setPauseDuration] = ctx.time.pauseDuration
 
   function pause() {
     setPaused(true)
