@@ -25,14 +25,11 @@ const isUseState = item => {
 // Arrays to just the state value
 export function contextToValueObject(obj) {
   const namesObject = {}
-
+  console.log(obj)
   for (const item in obj) {
-    console.log(obj[item])
     if (isUseState(obj[item])) {
-      console.log('is state')
       namesObject[item] = obj[item][0]
-    } else {
-      console.log('not state')
+    } else if (typeof obj[item] === 'object') {
       namesObject[item] = contextToValueObject(obj[item])
     }
   }
@@ -46,7 +43,7 @@ export function loadObjectIntoContext(obj, ctx) {
       // Call setState in ctx for each key in obj
       const setState = ctx[item][1]
       setState(obj[item])
-    } else {
+    } else if (typeof obj[item] === 'object') {
       // Recurse
       loadObjectIntoContext(obj[item], ctx[item])
     }
