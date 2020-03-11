@@ -29,7 +29,7 @@ export function contextToValueObject(obj) {
   for (const item in obj) {
     if (isUseState(obj[item])) {
       namesObject[item] = obj[item][0]
-    } else if (typeof obj[item] === 'object') {
+    } else {
       namesObject[item] = contextToValueObject(obj[item])
     }
   }
@@ -43,7 +43,7 @@ export function loadObjectIntoContext(obj, ctx) {
       // Call setState in ctx for each key in obj
       const setState = ctx[item][1]
       setState(obj[item])
-    } else if (typeof obj[item] === 'object') {
+    } else {
       // Recurse
       loadObjectIntoContext(obj[item], ctx[item])
     }
