@@ -20,23 +20,28 @@ const isUseState = item => {
   return Array.isArray(item) && item.length === 2 && hasSetState(item)
 }
 
-// Flattens out a object from the state context
 // Keeps object structure, but converts [state, setState]
 // Arrays to just the state value
 export function contextToValueObject(obj) {
-  const namesObject = {}
+  const valuesObj = {}
   console.log(obj)
-  for (const item in obj) {
+  for (let item in obj) {
     if (isUseState(obj[item])) {
-      namesObject[item] = obj[item][0]
+      valuesObj[item] = obj[item][0]
     } else {
-      namesObject[item] = contextToValueObject(obj[item])
+      // TODO: Add check on recursion case
+      // Function seems to be recursing into DOM refs
+      // leading to stack overflows (only when deployed)
+      valuesObj[item] = contextToValueObject(obj[item])
     }
   }
 
-  return namesObject
+  return valuesObj
 }
 
+// Inverse of contextToValueObject
+// Takes an object and attempts to move values from
+// it into context's state through setState
 export function loadObjectIntoContext(obj, ctx) {
   for (const item in obj) {
     if (isUseState(ctx[item])) {
@@ -44,7 +49,9 @@ export function loadObjectIntoContext(obj, ctx) {
       const setState = ctx[item][1]
       setState(obj[item])
     } else {
-      // Recurse
+      // TODO: Add check on recursion case
+      // Function seems to be recursing into DOM refs
+      // leading to stack overflows (only when deployed)
       loadObjectIntoContext(obj[item], ctx[item])
     }
   }

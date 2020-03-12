@@ -1,5 +1,5 @@
 import React from 'react'
-import HelpTooltip from './HelpTooltip';
+import HelpTooltip from './HelpTooltip'
 
 export default function LabelledField({ label, helpText, inputValue, setInputValue }) {
   function handleChange(event) {
