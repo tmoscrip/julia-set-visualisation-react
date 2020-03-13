@@ -24,7 +24,6 @@ const isUseState = item => {
 // Arrays to just the state value
 export function contextToValueObject(obj) {
   const valuesObj = {}
-  console.log(obj)
   for (let item in obj) {
     if (isUseState(obj[item])) {
       valuesObj[item] = obj[item][0]
@@ -64,27 +63,31 @@ function ModelProvider({ children }) {
     julia: {
       c: {
         x: useState(0.2),
-        y: useState('sin(u_time)'),
+        y: useState('sin(u_time)')
       },
       complexPoly: useState('z^2 + c'), // Complex Quadratic Polynomial
       escapeRadius: useState(4.0), // TODO: Does this stay constant for every polynomial?
-      maxIterations: useState(20),
+      maxIterations: useState(20)
     },
     viewport: {
       width: useState('3.'),
       height: useState('3.'),
       translate: {
         x: useState('0.'),
-        y: useState('0.'),
-      },
+        y: useState('0.')
+      }
     },
+    colorMap: [
+      { color: useState([6., 0.1, .7]), position: useState(0) },
+      { color: useState([1, .9, 0]), position: useState(1) }
+    ],
     time: {
       startedAt: useState(Date.now()),
       paused: useState(false),
       lastPausedAt: useState(0),
       pauseDuration: useState(0),
-      timeScale: useState(0.3),
-    },
+      timeScale: useState(0.3)
+    }
   }
 
   return <ShaderProvider value={initModelState}>{children}</ShaderProvider>

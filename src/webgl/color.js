@@ -1,5 +1,5 @@
 //
-// COLOUR SPACE FUNCTIONS
+// color SPACE FUNCTIONS
 //
 const hsv2rgb = `
 vec3 hsv2rgb(vec3 c) {
@@ -10,7 +10,7 @@ vec3 hsv2rgb(vec3 c) {
 `
 
 //
-// JULIA ITERATIONS HSV COLOURING FUNCTIONS
+// JULIA ITERATIONS HSV colorING FUNCTIONS
 //
 const huefn = `
 float huefn(float iterations) {
@@ -33,7 +33,7 @@ float valfn(float iterations) {
 }
 `
 
-export const colour = `
+export const color = `
 ${hsv2rgb}
 ${huefn}
 ${satfn}

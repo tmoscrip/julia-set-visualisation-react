@@ -47,7 +47,6 @@ export default function PresetSaver() {
 
   function savePreset() {
     const presetObject = makePresetObject(presetName, ctx)
-    console.log(presetObject)
     if (namedPresetExists(presetObject)) {
       // TODO: ask to overwrite
     }
@@ -56,13 +55,11 @@ export default function PresetSaver() {
   }
 
   function loadPreset() {
-    console.log('load preset')
     const presetArray = getPresetArray()
     // TODO: access presetArray by key identifier
     for (const i in presetArray) {
       const preset = presetArray[i]
       if (preset.name === selectedPreset) {
-        console.log('loading into conte')
         loadObjectIntoContext(preset.julia, ctx.julia)
         loadObjectIntoContext(preset.viewport, ctx.viewport)
       }

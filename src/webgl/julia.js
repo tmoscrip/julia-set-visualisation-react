@@ -1,5 +1,5 @@
 import { math } from './math'
-import { colour } from './colour'
+import { color } from './color'
 
 // GLSL 'for' loops can only be indexed up to a constant value
 // Passing in the max iteration count through a uniform encounters an error
@@ -8,16 +8,33 @@ function maxIterations(val) {
   return `#define maxIterations ${val}`
 }
 
-function cValue({x, y}) {
+function cValue({ x, y }) {
   return `vec2 c = vec2(${x}, ${y});`
 }
 
-function viewport({width, height, translate}) {
+function viewport({ width, height, translate }) {
   return `
   float XSIZE = ${width};
   float YSIZE = ${height};
   float XT = ${translate.x};
   float YT = ${translate.y};
+  `
+}
+
+function colorMap(c1, c2) {
+  const rgb = c => `vec3(${c[0]}, ${c[1]}, ${c[2]})`
+  return `
+  float mapCurve(float percent) {
+    float x = abs(cos(20.*3.14*percent));
+    return x;
+  }
+
+  vec3 colorMap(float percent) {
+    vec3 c1 = ${rgb(c1)};
+    vec3 c2 = ${rgb(c2)};
+    float curve = mapCurve(percent);
+    return c1 * (1. - curve) + c2 * curve;
+  }
   `
 }
 
@@ -52,22 +69,25 @@ vec3 julia(vec2 z, vec2 c) {
   }
 
   if (iters == maxIterations) {
-    result = float(iters);
     return vec3(0, 0, 0);
   } else {
     result = smoothIterations(z, iters);
   }
 
   //result = float(iters);
+  float percent = result/float(maxIterations);
 
-  float hue = huefn(result);
-  float sat = satfn(result);
-  float val = valfn(result);
-  return hsv2rgb(vec3(hue, sat, val));
+  // float hue = huefn(result);
+  // float sat = satfn(result);
+  // float val = valfn(result);
+
+  return colorMap(percent);
+
+  //return hsv2rgb(vec3(hue, sat, val));
 }
 `
 
-// Smooth colouring function
+// Smooth coloring function
 // http://linas.org/art-gallery/escape/escape.html
 // https://en.wikipedia.org/wiki/Mandelbrot_set#Continuous_(smooth)_coloring
 const smoothIterations = `
@@ -94,7 +114,6 @@ void main(void) {
 
   ${cValue(ctx.julia.c)}
 
-
   // Normalized pixel coordinates (from 0 to 1)
   vec2 uv = gl_FragCoord.xy / u_resolution.xy;
 
@@ -111,8 +130,9 @@ export const buildFragCode = ctx => `
 ${headers}
 ${maxIterations(ctx.julia.maxIterations)}
 ${uniforms}
+${colorMap(ctx.colorMap[0].color, ctx.colorMap[1].color)}
 ${math}
-${colour}
+${color}
 ${smoothIterations}
 ${julia}
 ${main(ctx)}
