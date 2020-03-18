@@ -70,6 +70,7 @@ code {
   height: 100vh;
   background-color: rgba(0.7, 0.7, 0.7, 0.7);
   border-right: 5px solid #aaa;
+  overflow: hidden;
 }
 
 .panel {
@@ -79,6 +80,7 @@ code {
 }
 
 .panel-open {
+  overflow-y: scroll;
 }
 
 .panel-closed {

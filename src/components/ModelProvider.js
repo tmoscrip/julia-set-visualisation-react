@@ -63,11 +63,11 @@ function ModelProvider({ children }) {
     julia: {
       c: {
         x: useState(0.2),
-        y: useState('sin(u_time)')
+        y: useState('0.8')
       },
       complexPoly: useState('z^2 + c'), // Complex Quadratic Polynomial
       escapeRadius: useState(4.0), // TODO: Does this stay constant for every polynomial?
-      maxIterations: useState(20)
+      maxIterations: useState(100)
     },
     viewport: {
       width: useState('3.'),

@@ -77,13 +77,13 @@ vec3 julia(vec2 z, vec2 c) {
   //result = float(iters);
   float percent = result/float(maxIterations);
 
-  // float hue = huefn(result);
-  // float sat = satfn(result);
-  // float val = valfn(result);
+  float hue = huefn(result);
+  float sat = satfn(result);
+  float val = valfn(result);
 
-  return colorMap(percent);
+  //return colorMap(percent);
 
-  //return hsv2rgb(vec3(hue, sat, val));
+  return hsv2rgb(vec3(hue, sat, val));
 }
 `
 
