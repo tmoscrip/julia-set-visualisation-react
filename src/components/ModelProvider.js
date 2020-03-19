@@ -63,31 +63,31 @@ function ModelProvider({ children }) {
     julia: {
       c: {
         x: useState(0.2),
-        y: useState('0.8')
+        y: useState('sin(u_time)'),
       },
       complexPoly: useState('z^2 + c'), // Complex Quadratic Polynomial
       escapeRadius: useState(4.0), // TODO: Does this stay constant for every polynomial?
-      maxIterations: useState(100)
+      maxIterations: useState(100),
     },
     viewport: {
       width: useState('3.'),
       height: useState('3.'),
       translate: {
         x: useState('0.'),
-        y: useState('0.')
-      }
+        y: useState('0.'),
+      },
     },
     colorMap: [
-      { color: useState([6., 0.1, .7]), position: useState(0) },
-      { color: useState([1, .9, 0]), position: useState(1) }
+      { color: useState([6, 0.1, 0.7]), position: useState(0) },
+      { color: useState([1, 0.9, 0]), position: useState(1) },
     ],
     time: {
       startedAt: useState(Date.now()),
       paused: useState(false),
       lastPausedAt: useState(0),
       pauseDuration: useState(0),
-      timeScale: useState(0.3)
-    }
+      timeScale: useState(0.3),
+    },
   }
 
   return <ShaderProvider value={initModelState}>{children}</ShaderProvider>

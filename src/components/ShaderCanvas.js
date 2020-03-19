@@ -7,7 +7,7 @@ import ControlPanel from './ControlPanel/ControlPanel'
 export default function ShaderCanvas() {
   const ctx = useContext(ShaderContext)
 
-  const [canvasRef, setCanvasRef] = ctx.canvasRef
+  const [, setCanvasRef] = ctx.canvasRef
   const [gl, setGl] = ctx.gl
   const [paused] = ctx.time.paused
 
@@ -51,6 +51,38 @@ export default function ShaderCanvas() {
     setDragStart(loc)
   }
 
+  function getAspectRatio(orientation) {
+    const canvas = document.getElementsByClassName('glcanvas')[0]
+    const [canvasWidth, canvasHeight] = [canvas.offsetWidth, canvas.offsetHeight]
+    // return early if 0 to avoid div by 0 errors
+    if (canvasHeight === 0 || canvasWidth === 0) return 1
+    if (orientation === 'landscape') {
+      return canvasWidth / canvasHeight
+    } else if (orientation === 'portrait') {
+      return canvasHeight / canvasWidth
+    }
+    return 1
+  }
+
+  function getOrientation() {
+    const canvas = document.getElementsByClassName('glcanvas')[0]
+    const [canvasWidth, canvasHeight] = [canvas.offsetWidth, canvas.offsetHeight]
+    return canvasWidth > canvasHeight ? 'landscape' : 'portrait'
+  }
+
+  function scaleViewportByAspectRatio({ width, height }) {
+    const canvasOrientation = getOrientation()
+    const aspectRatio = getAspectRatio(canvasOrientation)
+    // For landscape, width should not change
+    // For portrait, height should not change
+    if (canvasOrientation === 'landscape') {
+      height *= 1/aspectRatio
+    } else if (canvasOrientation === 'portrait') {
+      width *= 1/aspectRatio
+    }
+    return { width, height }
+  }
+
   // Translate position values from the canvas to xy-coordinates on the grid
   function canvasToGrid({ x, y }) {
     const canvas = document.getElementsByClassName('glcanvas')[0]
@@ -80,10 +112,8 @@ export default function ShaderCanvas() {
     const setViewportHeight = ctx.viewport.height[1]
 
     const dragEnd = [e.clientX, e.clientY]
-    console.log('drag end: ' + dragEnd)
     const canvas = document.getElementsByClassName('glcanvas')[0]
     const [canvasWidth, canvasHeight] = [canvas.offsetWidth, canvas.offsetHeight]
-    console.log('canvas dimensions:', canvasWidth, canvasHeight)
 
     // y values subtracted from canvas height to get correct locations
     // canvas dimensions are measured from top left, need to start from bottom left
@@ -102,14 +132,20 @@ export default function ShaderCanvas() {
     setTranslateX(dragCenterGrid.x)
     setTranslateY(dragCenterGrid.y)
 
+    // Scale current viewport size by ratio of drag box
     const viewportWidth = parseFloat(ctx.viewport.width)
     const viewportHeight = parseFloat(ctx.viewport.height)
 
-    const dragDimensions = { x: Math.abs(dragBox.x1 - dragBox.x2), y: Math.abs(dragBox.y1 - dragBox.y2) }
-    const dragScales = { x: viewportWidth * (dragDimensions.x / canvasWidth), y: viewportHeight * (dragDimensions.y / canvasHeight) }
-    
-    setViewportWidth(dragScales.x)
-    setViewportHeight(dragScales.y)
+    const dragDimensions = { width: Math.abs(dragBox.x1 - dragBox.x2), height: Math.abs(dragBox.y1 - dragBox.y2) }
+    const dragViewport = {
+      width: viewportWidth * (dragDimensions.width / canvasWidth),
+      height: viewportHeight * (dragDimensions.height / canvasHeight),
+    }
+
+    const newViewport = scaleViewportByAspectRatio(dragViewport)
+
+    setViewportWidth(newViewport.width)
+    setViewportHeight(newViewport.height)
   }
 
   return (
