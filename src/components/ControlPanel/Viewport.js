@@ -2,6 +2,7 @@ import React, { useContext } from 'react'
 import Translate from './Translate'
 import { ShaderContext } from '../ModelProvider'
 import LabelledField from './LabelledField'
+import AspectRatioLock from './AspectRatioLock'
 
 function Width() {
   const ctx = useContext(ShaderContext)
@@ -27,6 +28,7 @@ export default function Viewport() {
       <Width />
       <Height />
       <Translate />
+      <AspectRatioLock />
     </>
   )
 }

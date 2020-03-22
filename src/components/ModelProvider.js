@@ -76,6 +76,7 @@ function ModelProvider({ children }) {
         x: useState('0.'),
         y: useState('0.'),
       },
+      lockAspectRatio: useState(true),
     },
     colorMap: [
       { color: useState([6, 0.1, 0.7]), position: useState(0) },
