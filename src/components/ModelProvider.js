@@ -57,21 +57,50 @@ export function loadObjectIntoContext(obj, ctx) {
 }
 
 function ModelProvider({ children }) {
+  /*
+  Ints are not implictly cast to floats in WebGL, any value which is passed to
+  WebGL code for use as a float must contain a decimal point
+
+  This function appends a period to any int to avoid type errors once it's passed
+  into WebGL code
+*/
+  function useWebGlState(initValue) {
+    const [value, setValue] = useState(initValue)
+
+    // Returns the state value with problematic ints converted to floats
+    function fixedFloats() {
+      const intRegex = new RegExp('^(\\+|-)?\\d+$')
+
+      const trimmed = value.trim()
+
+      // Case 1: plain int
+      if (intRegex.test(trimmed)) {
+        return trimmed.concat('.')
+      }
+
+      // TODO: Case 2: equation string
+
+      return trimmed
+    }
+
+    return [value, setValue, fixedFloats]
+  }
+
   const initModelState = {
     canvasRef: useState(null), // Canvas element used for rendering the fractal
     gl: useState(null), // WebGL context of the canvas
     julia: {
       c: {
-        x: useState(0.2),
+        x: useState('0.2'),
         y: useState('sin(u_time)'),
       },
       complexPoly: useState('z^2 + c'), // Complex Quadratic Polynomial
-      escapeRadius: useState(4.0), // TODO: Does this stay constant for every polynomial?
-      maxIterations: useState(100),
+      escapeRadius: useState('4.0'), // TODO: Does this stay constant for every polynomial?
+      maxIterations: useState('100'),
     },
     viewport: {
-      width: useState('3.'),
-      height: useState('3.'),
+      width: useState('4.5'),
+      height: useState('4.5'),
       translate: {
         x: useState('0.'),
         y: useState('0.'),
@@ -87,7 +116,7 @@ function ModelProvider({ children }) {
       paused: useState(false),
       lastPausedAt: useState(0),
       pauseDuration: useState(0),
-      timeScale: useState(0.3),
+      timeScale: useState('0.3'),
     },
   }
 

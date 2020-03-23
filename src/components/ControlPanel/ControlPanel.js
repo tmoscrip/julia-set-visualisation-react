@@ -8,11 +8,10 @@ import CValue from './CValue'
 import PresetSaver from '../PresetSaver'
 import ColorMap from './ColorMap'
 
-function Spacer({ size }) {
-  return <div style={{ marginBottom: size }} />
-}
-
 function ControlPanel({ children }) {
+  function Spacer({ size }) {
+    return <div style={{ marginBottom: size }} />
+  }
   // TODO: Convert integer field values to glsl floats
 
   return (
