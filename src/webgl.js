@@ -73,16 +73,19 @@ function createProgram(gl, fragCode) {
 
   if (!gl.getShaderParameter(fragShader, gl.COMPILE_STATUS)) {
     const logOutput = gl.getShaderInfoLog(fragShader)
-    console.log(logOutput)
 
     // Extract line of error from log and print that line of the frag shader code
+    let idxList = []
+    for (let i = 0; i < logOutput.length; i++) {
+      if (logOutput[i] === ':') {
+        idxList.push(i)
+      }
+    }
 
-    const lineNumberRegex = '\\:(\\d+)\\:'
-    const logIdx = logOutput.search(lineNumberRegex)
-    // TODO: unhardcode for line number digit count
-    const lineNumber = logOutput.substring(logIdx + 1, logIdx + 3)
-    const splitFragCode = fragCode.split('\n')
-    console.log(splitFragCode[lineNumber - 2])
+    // Line number exists between second and third colons
+    const lineNumber = logOutput.substring(idxList[1] + 1, idxList[2])
+
+    console.log(fragCode.split('\n')[lineNumber - 1])
   }
 
   if (!gl.getShaderParameter(vertShader, gl.COMPILE_STATUS)) {
