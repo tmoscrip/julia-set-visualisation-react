@@ -4,27 +4,63 @@ import { ShaderContext, contextToValueObject } from './ModelProvider'
 import DebugFrame from './DebugFrame'
 import ControlPanel from './ControlPanel/ControlPanel'
 
-export default function ShaderCanvas() {
+function scaleViewportByAspectRatio({ width, height }) {
+  function getOrientation() {
+    const canvas = document.getElementsByClassName('glcanvas')[0]
+    const [canvasWidth, canvasHeight] = [canvas.offsetWidth, canvas.offsetHeight]
+    return canvasWidth > canvasHeight ? 'landscape' : 'portrait'
+  }
+
+  function getAspectRatio(orientation) {
+    const canvas = document.getElementsByClassName('glcanvas')[0]
+    const [canvasWidth, canvasHeight] = [canvas.offsetWidth, canvas.offsetHeight]
+    // return early if 0 to avoid div by 0 errors
+    if (canvasHeight === 0 || canvasWidth === 0) return 1
+    if (orientation === 'landscape') {
+      return canvasWidth / canvasHeight
+    } else if (orientation === 'portrait') {
+      return canvasHeight / canvasWidth
+    }
+    // Fallback if orientation does not match one of two expected values
+    return 1
+  }
+
+  const canvasOrientation = getOrientation()
+  const aspectRatio = getAspectRatio(canvasOrientation)
+  // For landscape, width should not change
+  // For portrait, height should not change
+  if (canvasOrientation === 'landscape') {
+    height *= 1 / aspectRatio
+  } else if (canvasOrientation === 'portrait') {
+    width *= 1 / aspectRatio
+  }
+  return { width, height }
+}
+
+function useGlCanvas() {
   const ctx = useContext(ShaderContext)
 
-  const [, setCanvasRef] = ctx.canvasRef
-  const [gl, setGl] = ctx.gl
-  const [paused] = ctx.time.paused
+  const canvasRef = useRef()
+  const setRef = ctx.canvasRef[1]
+  const setGl = ctx.gl[1]
 
-  const canvasRefTemp = useRef()
+  useEffect(() => {
+    setRef(canvasRef.current)
+    setGl(canvasRef.current.getContext('webgl'))
+  }, [setRef, setGl, canvasRef])
+
+  return canvasRef
+}
+
+function useJuliaAnimation() {
+  const ctx = useContext(ShaderContext)
+
   const animateRef = useRef()
   const [frameCount, setFrameCount] = useState(0)
   const [lastFrameTime, setLastFrameTime] = useState(0)
+  const paused = ctx.time.paused[0]
+  const gl = ctx.gl[0]
 
-  const [dragStart, setDragStart] = useState()
-
-  // Initialise canvas and webgl
-  useEffect(() => {
-    setCanvasRef(canvasRefTemp.current)
-    setGl(canvasRefTemp.current.getContext('webgl'))
-  }, [setCanvasRef, setGl])
-
-  // Start rendering
   useEffect(() => {
     // Define function to be run on every frame render
     const animate = () => {
@@ -45,67 +81,67 @@ export default function ShaderCanvas() {
     return () => cancelAnimationFrame(animateRef.current)
   }, [ctx, paused, gl])
 
+  return [frameCount, lastFrameTime]
+}
+
+function useAspectRatioScaling() {
+  const ctx = useContext(ShaderContext)
+  const [width, setWidth] = ctx.viewport.width
+  const [height, setHeight] = ctx.viewport.height
+
+  useEffect(() => {
+    const vp = scaleViewportByAspectRatio({ width, height })
+    setWidth(vp.width)
+    setHeight(vp.height)
+    // Effect can't fire when width/height changes, results in loop
+    // eslint-disable-next-line react-hooks/exhaustive-deps
+  }, [])
+}
+
+export default function ShaderCanvas() {
+  const ctx = useContext(ShaderContext)
+
+  const [lockAspectRatio] = ctx.viewport.lockAspectRatio
+  const [dragStart, setDragStart] = useState()
+
+  // Initialise canvas and webgl
+  const canvasRef = useGlCanvas()
+
+  // Start rendering
+  const [frameCount, lastFrameTime] = useJuliaAnimation()
+
+  // Scale initial viewport size to respect aspect ratio
+  useAspectRatioScaling()
+
   function startDrag(e) {
     const loc = [e.clientX, e.clientY]
     console.log('drag start: ' + loc)
     setDragStart(loc)
   }
 
-  function getAspectRatio(orientation) {
-    const canvas = document.getElementsByClassName('glcanvas')[0]
-    const [canvasWidth, canvasHeight] = [canvas.offsetWidth, canvas.offsetHeight]
-    // return early if 0 to avoid div by 0 errors
-    if (canvasHeight === 0 || canvasWidth === 0) return 1
-    if (orientation === 'landscape') {
-      return canvasWidth / canvasHeight
-    } else if (orientation === 'portrait') {
-      return canvasHeight / canvasWidth
-    }
-    return 1
-  }
-
-  function getOrientation() {
-    const canvas = document.getElementsByClassName('glcanvas')[0]
-    const [canvasWidth, canvasHeight] = [canvas.offsetWidth, canvas.offsetHeight]
-    return canvasWidth > canvasHeight ? 'landscape' : 'portrait'
-  }
-
-  function scaleViewportByAspectRatio({ width, height }) {
-    const canvasOrientation = getOrientation()
-    const aspectRatio = getAspectRatio(canvasOrientation)
-    // For landscape, width should not change
-    // For portrait, height should not change
-    if (canvasOrientation === 'landscape') {
-      height *= 1/aspectRatio
-    } else if (canvasOrientation === 'portrait') {
-      width *= 1/aspectRatio
-    }
-    return { width, height }
-  }
-
-  // Translate position values from the canvas to xy-coordinates on the grid
-  function canvasToGrid({ x, y }) {
-    const canvas = document.getElementsByClassName('glcanvas')[0]
-    const [canvasWidth, canvasHeight] = [canvas.offsetWidth, canvas.offsetHeight]
-
-    const gridWidth = parseFloat(ctx.viewport.width[0])
-    const gridHeight = parseFloat(ctx.viewport.height[0])
-
-    const widthScale = gridWidth / canvasWidth
-    const heightScale = gridHeight / canvasHeight
-
-    const translateX = parseFloat(ctx.viewport.translate.x[0])
-    const translateY = parseFloat(ctx.viewport.translate.y[0])
-
-    const res = {
-      x: -gridWidth / 2 + x * widthScale + translateX,
-      y: -gridHeight / 2 + y * heightScale + translateY,
-    }
-
-    return res
-  }
-
   function endDrag(e) {
+    // Translate position values from the canvas to xy-coordinates on the grid
+    function canvasToGrid({ x, y }) {
+      const canvas = document.getElementsByClassName('glcanvas')[0]
+      const [canvasWidth, canvasHeight] = [canvas.offsetWidth, canvas.offsetHeight]
+
+      const gridWidth = parseFloat(ctx.viewport.width[0])
+      const gridHeight = parseFloat(ctx.viewport.height[0])
+
+      const widthScale = gridWidth / canvasWidth
+      const heightScale = gridHeight / canvasHeight
+
+      const translateX = parseFloat(ctx.viewport.translate.x[0])
+      const translateY = parseFloat(ctx.viewport.translate.y[0])
+
+      const res = {
+        x: -gridWidth / 2 + x * widthScale + translateX,
+        y: -gridHeight / 2 + y * heightScale + translateY,
+      }
+
+      return res
+    }
+
     const setTranslateX = ctx.viewport.translate.x[1]
     const setTranslateY = ctx.viewport.translate.y[1]
     const setViewportWidth = ctx.viewport.width[1]
@@ -142,10 +178,16 @@ export default function ShaderCanvas() {
       height: viewportHeight * (dragDimensions.height / canvasHeight),
     }
 
-    const newViewport = scaleViewportByAspectRatio(dragViewport)
-
-    setViewportWidth(newViewport.width)
-    setViewportHeight(newViewport.height)
+    if (lockAspectRatio === true) {
+      console.log('scaling with lock')
+      const newViewport = scaleViewportByAspectRatio(dragViewport)
+      setViewportWidth(newViewport.width)
+      setViewportHeight(newViewport.height)
+    } else {
+      console.log('scaling without lock')
+      setViewportWidth(dragViewport.width)
+      setViewportHeight(dragViewport.height)
+    }
   }
 
   return (
@@ -156,7 +198,7 @@ export default function ShaderCanvas() {
         height='1000'
         onMouseDown={startDrag}
         onMouseUp={endDrag}
-        ref={canvasRefTemp}
+        ref={canvasRef}
       />
       <ControlPanel>
         <DebugFrame frameCount={frameCount} frameTime={Date.now() - lastFrameTime} />
