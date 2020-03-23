@@ -7,6 +7,7 @@ import PauseButton from '../PauseButton'
 import CValue from './CValue'
 import PresetSaver from '../PresetSaver'
 import ColorMap from './ColorMap'
+import JuliaSmoothing from './JuliaSmoothing'
 
 function ControlPanel({ children }) {
   function Spacer({ size }) {
@@ -19,6 +20,7 @@ function ControlPanel({ children }) {
       <PresetSaver />
       <Spacer size='3em' />
       <MaxIterations />
+      <JuliaSmoothing />
       <Spacer size='3em' />
       <Viewport />
       <Spacer size='3em' />

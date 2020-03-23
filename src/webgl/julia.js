@@ -56,7 +56,7 @@ precision highp float;
 //
 // JULIA ITERATION FUNCTIONS
 //
-const julia = `
+const julia = ctx => `
 vec3 julia(vec2 z, vec2 c) {
   float result;
   int iters = 0;
@@ -71,10 +71,9 @@ vec3 julia(vec2 z, vec2 c) {
   if (iters == maxIterations) {
     return vec3(0, 0, 0);
   } else {
-    result = smoothIterations(z, iters);
+    ${ctx.julia.useSmoothing ? 'result = smoothIterations(z, iters);' : 'result = float(iters);'}
   }
 
-  //result = float(iters);
   float percent = result/float(maxIterations);
 
   float hue = huefn(result);
@@ -134,7 +133,7 @@ ${colorMap(ctx.colorMap[0].color, ctx.colorMap[1].color)}
 ${math}
 ${color}
 ${smoothIterations}
-${julia}
+${julia(ctx)}
 ${main(ctx)}
 `
 

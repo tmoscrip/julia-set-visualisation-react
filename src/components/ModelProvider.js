@@ -97,6 +97,7 @@ function ModelProvider({ children }) {
       complexPoly: useState('z^2 + c'), // Complex Quadratic Polynomial
       escapeRadius: useState('4.0'), // TODO: Does this stay constant for every polynomial?
       maxIterations: useState('100'),
+      useSmoothing: useState(true),
     },
     viewport: {
       width: useState('4.5'),
