@@ -11,7 +11,7 @@ export const ShaderConsumer = ShaderContext.Consumer
 
 // Check to see if array has useState set function within
 const hasSetState = item => {
-  return typeof item[1] === 'function' && item[1].name === 'bound dispatchAction'
+  return typeof item[1] === 'function' && item[1].name.startsWith('bound ')
 }
 
 // Is the item a useState array?
