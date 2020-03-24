@@ -25,9 +25,9 @@ function ControlPanel({ children }) {
       <Viewport />
       <Spacer size='3em' />
       <CValue />
-      <ComplexPoly />
+      {/* <ComplexPoly />
       <Spacer size='3em' />
-      <ColorMap />
+      <ColorMap /> */}
       <Spacer size='3em' />
       <PauseButton />
       {children}
