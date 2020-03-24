@@ -19,6 +19,9 @@ function ControlPanel({ children }) {
     <CollapsiblePanel styleClass='control-panel'>
       <PresetSaver />
       <Spacer size='3em' />
+      <p className='field-container'>Drag a box on the canvas to zoom to that area</p>
+      <p className='field-container'>Integers must be followed by a period to avoid compiliation errors</p>
+      <Spacer size='3em' />
       <MaxIterations />
       <JuliaSmoothing />
       <Spacer size='3em' />
