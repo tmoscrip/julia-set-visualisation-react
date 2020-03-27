@@ -7,6 +7,7 @@ import PauseButton from '../PauseButton'
 import CValue from './CValue'
 import PresetSaver from '../PresetSaver'
 import JuliaSmoothing from './JuliaSmoothing'
+import EscapeRadius from './EscapeRadius'
 
 function ControlPanel({ children }) {
   function Spacer({ size }) {
@@ -21,6 +22,7 @@ function ControlPanel({ children }) {
       <p className='field-container'>Drag a box on the canvas to zoom to that area</p>
       <Spacer size='3em' />
       <MaxIterations />
+      <EscapeRadius />
       <JuliaSmoothing />
       <Spacer size='3em' />
       <p className='field-container'>

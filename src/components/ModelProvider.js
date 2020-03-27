@@ -95,7 +95,7 @@ function ModelProvider({ children }) {
         y: useState('sin(u_time)'),
       },
       coefficients: useState('1., 0., 1.'),
-      escapeRadius: useState('100.0'), // TODO: Does this stay constant for every polynomial?
+      escapeRadius: useState('100.0'),
       maxIterations: useState('100'),
       useSmoothing: useState(true),
     },
