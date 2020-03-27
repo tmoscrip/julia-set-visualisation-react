@@ -21,23 +21,6 @@ function viewport({ width, height, translate }) {
   `
 }
 
-function colorMap(c1, c2) {
-  const rgb = c => `vec3(${c[0]}, ${c[1]}, ${c[2]})`
-  return `
-  float mapCurve(float percent) {
-    float x = abs(cos(20.*3.14*percent));
-    return x;
-  }
-
-  vec3 colorMap(float percent) {
-    vec3 c1 = ${rgb(c1)};
-    vec3 c2 = ${rgb(c2)};
-    float curve = mapCurve(percent);
-    return c1 * (1. - curve) + c2 * curve;
-  }
-  `
-}
-
 const uniforms = `
 uniform float u_escapeRadius;
 
@@ -56,15 +39,49 @@ precision highp float;
 //
 // JULIA ITERATION FUNCTIONS
 //
+const polyIterate = coefficients => {
+  const cmplxExp = (exp, coeff) => {
+    // Skip all terms with coefficient of 0
+    if (parseFloat(coeff) !== 0) {
+      // When exp = 0, we are handling the C value
+      if (exp === 0) {
+        return `z = complexAdd(z, ${coeff}*c);`
+      }
+      // Use complexAdd instead of complexPower for exponent 1
+      if (exp === 1) {
+        return `z = complexAdd(z, ${coeff}*zPrev);`
+      }
+      return `z = complexAdd(z, complexPower(${coeff}*zPrev, vec2(${exp}, 0.)));`
+    }
+    return ''
+  }
+
+  // Remove all whitespace, split into list delimitted by commas
+  const coeffList = coefficients.replace(/\s/g, '').split(',')
+  let polySource = ''
+  for (let i = 0; i < coeffList.length; i++) {
+    const exp = coeffList.length - (i + 1)
+    const nextTerm = cmplxExp(exp, coeffList[i])
+    if (nextTerm !== '') {
+      polySource = polySource.concat(cmplxExp(exp, coeffList[i]), '\n')
+    }
+  }
+
+  console.log(polySource)
+  return polySource
+}
+
 const julia = ctx => `
 vec3 julia(vec2 z, vec2 c) {
   float result;
   int iters = 0;
+  vec2 zPrev = z;
+  z = vec2(0.);
 
   for (int i = 0; i <= maxIterations; i++) {
-    z = complexPower(z, vec2(2, 0));
-    z = complexAdd(z, c);
+    ${polyIterate(ctx.julia.coefficients)}
     iters = i;
+    zPrev = z;
     if (complexMag(z) > u_escapeRadius) break;
   }
 
@@ -79,8 +96,6 @@ vec3 julia(vec2 z, vec2 c) {
   float hue = huefn(result);
   float sat = satfn(result);
   float val = valfn(result);
-
-  //return colorMap(percent);
 
   return hsv2rgb(vec3(hue, sat, val));
 }
@@ -129,7 +144,6 @@ export const buildFragCode = ctx => `
 ${headers}
 ${maxIterations(ctx.julia.maxIterations)}
 ${uniforms}
-${colorMap(ctx.colorMap[0].color, ctx.colorMap[1].color)}
 ${math}
 ${color}
 ${smoothIterations}

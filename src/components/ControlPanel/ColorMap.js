@@ -2,6 +2,12 @@ import React, { useContext } from 'react'
 import LabelledField from './LabelledField'
 import { ShaderContext } from './../ModelProvider';
 
+function HexField() {
+  return (
+    <LabelledField label='hex colour'
+  )
+}
+
 export default function ColorMap() {
   const ctx = useContext(ShaderContext)
   const [colorOne, setColorOne] = ctx.colorMap[0].color

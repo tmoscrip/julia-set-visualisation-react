@@ -9,8 +9,24 @@ vec3 hsv2rgb(vec3 c) {
 }
 `
 
+function parseHexColour(colourString, colourSpace) {
+  const cSpace = colourSpace.lower()
+  // Return solid green if colourspace cannot be understood
+  if (!(cSpace in ['rgb', 'hsv', 'hsl'])) {
+    return 'vec3(0, 1, 0)'
+  }
+
+  let cString = colourString
+  cString = cString.trim()
+
+  if (cString.startsWith('#')) {
+    cString = cString.slice(1, cString.length)
+  }
+
+}
+
 //
-// JULIA ITERATIONS HSV colorING FUNCTIONS
+// JULIA ITERATIONS HSV COLORING FUNCTIONS
 //
 const huefn = `
 float huefn(float iterations) {

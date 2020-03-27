@@ -94,8 +94,8 @@ function ModelProvider({ children }) {
         x: useState('0.2'),
         y: useState('sin(u_time)'),
       },
-      complexPoly: useState('z^2 + c'), // Complex Quadratic Polynomial
-      escapeRadius: useState('4.0'), // TODO: Does this stay constant for every polynomial?
+      coefficients: useState('1., 0., 1.'),
+      escapeRadius: useState('100.0'), // TODO: Does this stay constant for every polynomial?
       maxIterations: useState('100'),
       useSmoothing: useState(true),
     },
