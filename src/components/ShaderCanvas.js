@@ -142,6 +142,13 @@ export default function ShaderCanvas() {
       return res
     }
 
+    function dragHasNoArea({ x1, x2, y1, y2 }) {
+      const width = Math.abs(x1 - x2)
+      const height = Math.abs(y1 - y2)
+
+      return width < 1 || height < 1
+    }
+
     const setTranslateX = ctx.viewport.translate.x[1]
     const setTranslateY = ctx.viewport.translate.y[1]
     const setViewportWidth = ctx.viewport.width[1]
@@ -160,9 +167,12 @@ export default function ShaderCanvas() {
       y1: canvas.offsetHeight - dragStart[1],
       y2: canvas.offsetHeight - dragEnd[1],
     }
-    console.log(dragBox)
+
+    if (dragHasNoArea(dragBox)) {
+      return
+    }
+
     const dragCenterCanvas = { x: (dragBox.x1 + dragBox.x2) / 2, y: (dragBox.y1 + dragBox.y2) / 2 }
-    console.log(dragCenterCanvas)
     const dragCenterGrid = canvasToGrid(dragCenterCanvas)
 
     setTranslateX(dragCenterGrid.x)
