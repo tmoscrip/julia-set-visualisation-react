@@ -1,6 +1,7 @@
 import React, { useState, useEffect, useContext } from 'react'
-import { contextToValueObject, ShaderContext, loadObjectIntoContext } from './ModelProvider'
-import LabelledField from './ControlPanel/LabelledField'
+import { contextToValueObject, ShaderContext, loadObjectIntoContext } from '../ModelProvider'
+import { LabelledField } from './InputTypes'
+import CollapsibleGroup from './CollapsibleGroup'
 
 function makePresetObject(name, ctx) {
   const julia = contextToValueObject(ctx.julia)
@@ -8,7 +9,7 @@ function makePresetObject(name, ctx) {
   return {
     name,
     julia,
-    viewport
+    viewport,
   }
 }
 
@@ -39,6 +40,8 @@ export default function PresetSaver() {
   const [selectedPreset, setSelectedPreset] = useState('')
   const [presetName, setPresetName] = useState('')
   const [presetsList, setPresetsList] = useState([])
+
+  const title = 'Presets'
 
   const updatePresetsList = () => {
     const presets = getPresetArray()
@@ -76,7 +79,7 @@ export default function PresetSaver() {
   }, [])
 
   return (
-    <div>
+    <CollapsibleGroup title={title}>
       <LabelledField label='Preset name' inputValue={presetName} setInputValue={setPresetName} />
       <select value={selectedPreset} onChange={updateSelection} className='panel-input preset-selector'>
         {presetsList.length === 0 ? <option>No presets saved</option> : null}
@@ -94,6 +97,6 @@ export default function PresetSaver() {
       <button className='panel-input' onClick={loadPreset}>
         Load
       </button>
-    </div>
+    </CollapsibleGroup>
   )
 }

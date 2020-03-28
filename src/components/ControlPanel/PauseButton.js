@@ -1,5 +1,5 @@
 import React, { useContext } from 'react'
-import { ShaderContext } from './ModelProvider'
+import { ShaderContext } from '../ModelProvider'
 
 export default function PauseButton() {
   const ctx = useContext(ShaderContext)

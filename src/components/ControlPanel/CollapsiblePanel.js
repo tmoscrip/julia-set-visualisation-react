@@ -1,8 +1,6 @@
 import React, { useState } from 'react'
 
 function PanelToggleButton({open, setOpen}) {
-
-
   function togglePanel(event) {
     if (open === true) {
       setOpen(false)
