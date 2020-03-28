@@ -65,19 +65,30 @@ Control panel groups
   transition-timing-function: cubic-bezier(0.05, 0.69, 0.14, 1);
 }
 
+/* Open/close buttons */
+.group-container svg {
+  transform: rotate(90deg);
+}
+
+.group-container.open svg {
+  transform: rotate(-90deg);
+}
+
 .group-heading {
-  display: inline;
+  display: flex;
+  align-items: center;
+  border-bottom: 2px solid rgba(255, 255, 255, 0.8);
 }
 
 .group-title {
   display: inherit;
   font-size: 2rem;
   color: white;
-  margin-right: 1.5rem;
+  margin-right: .5rem;
 }
 
 .group-button {
-  display: inherit;
+  fill: white;
 }
 
 /* 
@@ -91,7 +102,7 @@ Collapsible control panel
   display: block;
   width: 48rem;
   height: 100vh;
-  background-color: rgba(0.7, 0.7, 0.7, 0.7);
+  background-color: rgba(0, 0, 0, 0.7);
   border-right: 5px solid #aaa;
   overflow: hidden;
 }
