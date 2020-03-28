@@ -1,6 +1,40 @@
 import { math } from './math'
 import { color } from './color'
 
+/*
+  Ints are not implictly cast to floats in WebGL, any value which is passed to
+  WebGL code for use as a float must contain a decimal point
+
+  This function appends a period to any int to avoid type errors once it's passed
+  into WebGL code
+*/
+function fixWebGlInts(str) {
+  let finalStr = str
+  // Capture: 1. floats, 2. floats (int w/ trailing period), 3. ints
+  const anyNumberRegex = new RegExp(/\d+[.]\d+|(\d+[.])+|(\d+)/g)
+
+  // Find all matches
+  let match
+  let matches = []
+  while ((match = anyNumberRegex.exec(str)) !== null) {
+    matches.push(match)
+  }
+
+  // Filter out floats
+  matches = matches.filter(m => !m[0].includes('.'))
+
+  // How many extra characters have been inserted
+  let insertedCount = 0
+  for (let i in matches) {
+    let m = matches[i]
+    let insertAt = m['index'] + m[0].length + insertedCount
+    finalStr = finalStr.slice(0, insertAt) + '.' + finalStr.slice(insertAt, finalStr.length)
+    insertedCount += 1
+  }
+
+  return finalStr
+}
+
 // GLSL 'for' loops can only be indexed up to a constant value
 // Passing in the max iteration count through a uniform encounters an error
 // Therefore this function constructs a constant value definition
@@ -9,15 +43,15 @@ function maxIterations(val) {
 }
 
 function cValue({ x, y }) {
-  return `vec2 c = vec2(${x}, ${y});`
+  return `vec2 c = vec2(${fixWebGlInts(x)}, ${fixWebGlInts(y)});`
 }
 
 function viewport({ width, height, translate }) {
   return `
-  float XSIZE = ${width};
-  float YSIZE = ${height};
-  float XT = ${translate.x};
-  float YT = ${translate.y};
+  float XSIZE = ${fixWebGlInts(width)};
+  float YSIZE = ${fixWebGlInts(height)};
+  float XT = ${fixWebGlInts(translate.x)};
+  float YT = ${fixWebGlInts(translate.y)};
   `
 }
 
@@ -63,7 +97,7 @@ const polyIterate = coefficients => {
     const exp = coeffList.length - (i + 1)
     const nextTerm = cmplxExp(exp, coeffList[i])
     if (nextTerm !== '') {
-      polySource = polySource.concat(cmplxExp(exp, coeffList[i]), '\n')
+      polySource = polySource.concat(nextTerm, '\n')
     }
   }
 
@@ -79,7 +113,7 @@ vec3 julia(vec2 z, vec2 c) {
   z = vec2(0.);
 
   for (int i = 0; i <= maxIterations; i++) {
-    ${polyIterate(ctx.julia.coefficients)}
+    ${polyIterate(fixWebGlInts(ctx.julia.coefficients))}
     iters = i;
     zPrev = z;
     if (complexMag(z) > u_escapeRadius) break;

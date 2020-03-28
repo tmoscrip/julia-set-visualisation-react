@@ -1,17 +1,6 @@
 import React from 'react'
 
-export function DoubleArrow({ facing, onClick, className }) {
-  function directionClassName() {
-    switch (facing.trim().toLowerCase()) {
-      case 'up':
-        return 'up'
-      case 'down':
-        return 'down'
-      default:
-        return ''
-    }
-  }
-
+export function DoubleArrow({ onClick, className }) {
   return (
     <svg
       xmlns='http://www.w3.org/2000/svg'
