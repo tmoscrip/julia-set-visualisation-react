@@ -66,6 +66,15 @@ function SmoothingToggle() {
   return <CheckboxField label={label} helpText={helpText} inputValue={value} setInputValue={setValue} />
 }
 
+function TimeScale() {
+  const ctx = useContext(ShaderContext)
+  const [inputValue, setInputValue] = ctx.time.timeScale
+
+  const helpText = 'Time scale'
+
+  return <LabelledField label='Time scale' helpText={helpText} inputValue={inputValue} setInputValue={setInputValue} />
+}
+
 export default function JuliaVariables() {
   const title = 'Julia Variables'
 
@@ -77,6 +86,7 @@ export default function JuliaVariables() {
       <MaxIterations />
       <EscapeRadius />
       <SmoothingToggle />
+      <TimeScale />
     </CollapsibleGroup>
   )
 }
