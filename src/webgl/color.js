@@ -22,7 +22,6 @@ function parseHexColour(colourString, colourSpace) {
   if (cString.startsWith('#')) {
     cString = cString.slice(1, cString.length)
   }
-
 }
 
 //
@@ -31,21 +30,21 @@ function parseHexColour(colourString, colourSpace) {
 const huefn = `
 float huefn(float iterations) {
   float max_iter = float(maxIterations);
-  return .1 + 5.6*(iterations / max_iter);
+  return .1 + .3*(iterations / max_iter);
 }
 `
 
 const satfn = `
 float satfn(float iterations) {
   float max_iter = float(maxIterations);
-  return .7 + 1.*(iterations / max_iter);
+  return .5 + .5*(iterations / max_iter);
 }
 `
 
 const valfn = `
 float valfn(float iterations) {
   float max_iter = float(maxIterations);
-  return .7 + 1.*(iterations / max_iter);
+  return .5 + 2.*(iterations / max_iter);
 }
 `
 

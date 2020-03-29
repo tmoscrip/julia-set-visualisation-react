@@ -153,6 +153,19 @@ Control panel fields
   text-shadow: 2px 2px black;
 }
 
+/*
+Human-readable polynomial formula
+*/
+.poly-term {
+  font-size: 1.5rem;
+  color: white;
+}
+
+.poly-term sup {
+  vertical-align: super;
+  font-size: 0.75em;
+}
+
 /* 
 Pause control
 */
