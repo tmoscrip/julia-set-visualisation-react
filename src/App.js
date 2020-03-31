@@ -1,7 +1,7 @@
 import React from 'react'
-import './App.css'
+import './App.scss'
 import ModelProvider from './components/ModelProvider'
-import ShaderCanvas from './components/ShaderCanvas';
+import ShaderCanvas from './components/ShaderCanvas'
 
 function App() {
   return (
