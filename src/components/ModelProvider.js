@@ -79,6 +79,18 @@ function ModelProvider({ children }) {
       },
       lockAspectRatio: useState(true),
     },
+    color: {
+      colorPoints: useState([
+        {
+          hex: '#FFFFFF',
+          position: 0,
+        },
+        {
+          hex: '#000000',
+          position: 1,
+        },
+      ]),
+    },
     time: {
       startedAt: useState(Date.now()),
       paused: useState(false),

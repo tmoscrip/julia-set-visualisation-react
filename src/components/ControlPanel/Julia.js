@@ -39,6 +39,7 @@ function HumanReadableFormula() {
   const [coefficients] = ctx.julia.coefficients
   const termList = getTermList(coefficients)
 
+  // TODO: handle coefficients that are an expression rather than a number
   function PolynomialTerm({ term, isFirst }) {
     const { exp, coeff } = term
 
@@ -106,11 +107,11 @@ function HumanReadableFormula() {
   }
 
   return (
-    <div>
+    <span className='poly-container'>
       {termList.map((t, i) => (
-        <PolynomialTerm term={t} isFirst={i === 0} />
+        <PolynomialTerm key={i} term={t} isFirst={i === 0} />
       ))}
-    </div>
+    </span>
   )
 }
 

@@ -4,6 +4,7 @@ import CollapsiblePanel from './CollapsiblePanel'
 import PauseButton from './PauseButton'
 import PresetSaver from './PresetSaver'
 import JuliaVariables from './Julia'
+import ColorMap from './ColorMap'
 
 function ControlPanel({ children }) {
   function Spacer({ size }) {
@@ -20,6 +21,8 @@ function ControlPanel({ children }) {
       <JuliaVariables />
       <Spacer size='3em' />
       <Viewport />
+      <Spacer size='3em' />
+      <ColorMap />
       <Spacer size='3em' />
       <PresetSaver />
       <Spacer size='3em' />
