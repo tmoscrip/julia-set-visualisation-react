@@ -62,7 +62,7 @@ function ModelProvider({ children }) {
     gl: useState(null), // WebGL context of the canvas
     julia: {
       c: {
-        x: useState('0.2'),
+        x: useState('-0.2'),
         y: useState('sin(u_time)'),
       },
       coefficients: useState('1, 0, 1'),

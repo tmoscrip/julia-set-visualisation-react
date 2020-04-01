@@ -64,6 +64,8 @@ uniform float u_width;
 uniform float u_height;
 uniform float u_translatex;
 uniform float u_translatey;
+
+uniform sampler2D u_colormap;
 `
 
 const headers = `
@@ -100,13 +102,11 @@ const polyIterate = coefficients => {
       polySource = polySource.concat(nextTerm, '\n')
     }
   }
-
-  console.log(polySource)
   return polySource
 }
 
 const julia = ctx => `
-vec3 julia(vec2 z, vec2 c) {
+vec4 julia(vec2 z, vec2 c) {
   float result;
   int iters = 0;
   vec2 zPrev = z;
@@ -120,18 +120,20 @@ vec3 julia(vec2 z, vec2 c) {
   }
 
   if (iters == maxIterations) {
-    return vec3(0, 0, 0);
+    return vec4(0,0,0,1);
   } else {
     ${ctx.julia.useSmoothing ? 'result = smoothIterations(z, iters);' : 'result = float(iters);'}
   }
 
   float percent = result/float(maxIterations);
 
-  float hue = huefn(result);
-  float sat = satfn(result);
-  float val = valfn(result);
+  return texture2D(u_colormap, vec2(percent));
 
-  return hsv2rgb(vec3(hue, sat, val));
+  // float hue = huefn(result);
+  // float sat = satfn(result);
+  // float val = valfn(result);
+
+  // return hsv2rgb(vec3(hue, sat, val, 1.0));
 }
 `
 
@@ -169,8 +171,8 @@ void main(void) {
   z.x = (XSIZE * (uv.x - .5)) + XT;
   z.y = (YSIZE * (uv.y - .5)) + YT;
 
-  vec3 col = julia(z, c);
-  gl_FragColor = vec4(col, 1.);
+  vec4 col = julia(z, c);
+  gl_FragColor = col;
 }
 `
 
