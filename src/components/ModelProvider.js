@@ -62,12 +62,12 @@ function ModelProvider({ children }) {
     gl: useState(null), // WebGL context of the canvas
     julia: {
       c: {
-        x: useState('-0.2'),
+        x: useState('-0.8'),
         y: useState('sin(u_time)'),
       },
       coefficients: useState('1, 0, 1'),
-      escapeRadius: useState('100'),
-      maxIterations: useState('100'),
+      escapeRadius: useState('20'),
+      maxIterations: useState('50'),
       useSmoothing: useState(true),
     },
     viewport: {
@@ -90,6 +90,7 @@ function ModelProvider({ children }) {
           position: 1,
         },
       ]),
+      textureData: useState('')
     },
     time: {
       startedAt: useState(Date.now()),

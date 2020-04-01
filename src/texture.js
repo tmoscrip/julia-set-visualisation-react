@@ -1,9 +1,13 @@
 import { mapNDArray } from './helpers'
 
+// TODO: investigate color conversion algorithms:
+// https://www.cs.rit.edu/~ncs/color/t_convert.html
+// https://gist.github.com/Tetr4/3c7a4eddb78ae537c995
+
 export function testTexture(TEX_WIDTH, TEX_CHANNELS) {
   // RGBA
-  const red = [255, 255, 255, 255]
-  const green = [0, 0, 0, 255]
+  const black = [0, 0, 0, 255]
+  const green = [0, 255, 0, 255]
 
   const lerpReduceArrays = (a, b, steps) => {
     const lerp = (a, b, frac) => {
@@ -22,7 +26,7 @@ export function testTexture(TEX_WIDTH, TEX_CHANNELS) {
     return out
   }
 
-  const texLerp = lerpReduceArrays(green, red, TEX_WIDTH)
+  const texLerp = lerpReduceArrays(green, black, TEX_WIDTH)
   const tex2D = mapNDArray(texLerp, i => Math.round(i))
 
   const TEX_SIZE = TEX_WIDTH * TEX_CHANNELS

@@ -59,6 +59,7 @@ export default function ColorMap() {
 
   const minPoints = 2
 
+
   function handleFieldChange(e, idx) {
     const newValue = e.target.value
     const objAtIdx = colorPoints[idx]
