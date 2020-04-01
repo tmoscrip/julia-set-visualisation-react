@@ -115,7 +115,6 @@ export default function ShaderCanvas() {
 
   function startDrag(e) {
     const loc = [e.clientX, e.clientY]
-    console.log('drag start: ' + loc)
     setDragStart(loc)
   }
 
@@ -189,12 +188,10 @@ export default function ShaderCanvas() {
     }
 
     if (lockAspectRatio === true) {
-      console.log('scaling with lock')
       const newViewport = scaleViewportByAspectRatio(dragViewport)
       setViewportWidth(newViewport.width)
       setViewportHeight(newViewport.height)
     } else {
-      console.log('scaling without lock')
       setViewportWidth(dragViewport.width)
       setViewportHeight(dragViewport.height)
     }

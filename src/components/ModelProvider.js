@@ -82,7 +82,7 @@ function ModelProvider({ children }) {
     color: {
       colorPoints: useState([
         {
-          hex: '#FFFFFF',
+          hex: '#00FF00',
           position: 0,
         },
         {
@@ -90,7 +90,7 @@ function ModelProvider({ children }) {
           position: 1,
         },
       ]),
-      textureData: useState('')
+      textureData: useState(),
     },
     time: {
       startedAt: useState(Date.now()),

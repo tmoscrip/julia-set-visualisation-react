@@ -1,13 +1,36 @@
 import { mapNDArray } from './helpers'
 
+export const TEX_WIDTH = 512
+export const TEX_CHANNELS = 4
+
 // TODO: investigate color conversion algorithms:
 // https://www.cs.rit.edu/~ncs/color/t_convert.html
 // https://gist.github.com/Tetr4/3c7a4eddb78ae537c995
+export function parseHexColor(colorString) {
+  let cString = colorString.trim()
 
-export function testTexture(TEX_WIDTH, TEX_CHANNELS) {
-  // RGBA
-  const black = [0, 0, 0, 255]
-  const green = [0, 255, 0, 255]
+  if (cString.startsWith('#')) {
+    cString = cString.slice(1, cString.length)
+  }
+
+  const hexIdent = '0x'
+
+  if (parseInt(cString) != null) {
+    const colorAsArray = [
+      parseInt(hexIdent.concat(cString.slice(0, 2))),
+      parseInt(hexIdent.concat(cString.slice(2, 4))),
+      parseInt(hexIdent.concat(cString.slice(4, 6))),
+      255, // Alpha
+    ]
+    return colorAsArray
+  }
+
+  return [0, 0, 0, 255]
+}
+
+export function generateTextureData(colorPoints) {
+  const c1 = colorPoints[0].color
+  const c2 = colorPoints[1].color
 
   const lerpReduceArrays = (a, b, steps) => {
     const lerp = (a, b, frac) => {
@@ -26,7 +49,7 @@ export function testTexture(TEX_WIDTH, TEX_CHANNELS) {
     return out
   }
 
-  const texLerp = lerpReduceArrays(green, black, TEX_WIDTH)
+  const texLerp = lerpReduceArrays(c1, c2, TEX_WIDTH)
   const tex2D = mapNDArray(texLerp, i => Math.round(i))
 
   const TEX_SIZE = TEX_WIDTH * TEX_CHANNELS

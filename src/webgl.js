@@ -1,5 +1,5 @@
 import { buildFragCode, vertCode } from './webgl/julia'
-import { testTexture } from './texture'
+import { TEX_WIDTH } from './texture'
 
 //
 // WebGL initialisation and render loop
@@ -96,6 +96,16 @@ function createProgram(gl, fragCode) {
   return shaderProgram
 }
 
+function bindColorMap(gl, textureData) {
+  const texture = gl.createTexture()
+  gl.bindTexture(gl.TEXTURE_2D, texture)
+  gl.texImage2D(gl.TEXTURE_2D, 0, gl.RGBA, TEX_WIDTH, 1, 0, gl.RGBA, gl.UNSIGNED_BYTE, textureData)
+  gl.texParameteri(gl.TEXTURE_2D, gl.TEXTURE_MIN_FILTER, gl.LINEAR)
+  gl.texParameteri(gl.TEXTURE_2D, gl.TEXTURE_WRAP_S, gl.CLAMP_TO_EDGE)
+  gl.texParameteri(gl.TEXTURE_2D, gl.TEXTURE_WRAP_T, gl.CLAMP_TO_EDGE)
+  return texture
+}
+
 function setUniforms(shaderProgram, ctx) {
   const { canvasRef, gl, julia, time, viewport } = ctx
   const { escapeRadius, maxIterations } = julia
@@ -126,15 +136,7 @@ function setUniforms(shaderProgram, ctx) {
   gl.uniform1f(yTranslateUniform, viewport.translate.y)
 
   const colormapUniform = gl.getUniformLocation(shaderProgram, 'u_colormap')
-  const TEX_WIDTH = 1024
-  const TEX_CHANNELS = 4
-  const textureData = testTexture(TEX_WIDTH, TEX_CHANNELS)
-  const texture = gl.createTexture()
-  gl.bindTexture(gl.TEXTURE_2D, texture)
-  gl.texImage2D(gl.TEXTURE_2D, 0, gl.RGBA, TEX_WIDTH, 1, 0, gl.RGBA, gl.UNSIGNED_BYTE, textureData)
-  gl.texParameteri(gl.TEXTURE_2D, gl.TEXTURE_MIN_FILTER, gl.LINEAR)
-  gl.texParameteri(gl.TEXTURE_2D, gl.TEXTURE_WRAP_S, gl.CLAMP_TO_EDGE)
-  gl.texParameteri(gl.TEXTURE_2D, gl.TEXTURE_WRAP_T, gl.CLAMP_TO_EDGE)
+  const texture = bindColorMap(gl, ctx.color.textureData)
   gl.uniform1i(colormapUniform, texture)
 }
 

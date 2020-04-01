@@ -9,20 +9,6 @@ vec3 hsv2rgb(vec3 c) {
 }
 `
 
-function parseHexColour(colourString) {
-  let cString = colourString.trim()
-
-  if (cString.startsWith('#')) {
-    cString = cString.slice(1, cString.length)
-  }
-
-  if (parseInt(cString) != null) {
-    return [parseInt(cString.slice(0, 2)), parseInt(cString.slice(2, 4)), parseInt(cString.slice(4, 6))]
-  }
-
-  return [0, 0, 0]
-}
-
 //
 // JULIA ITERATIONS HSV COLORING FUNCTIONS
 //

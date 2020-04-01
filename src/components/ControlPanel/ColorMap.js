@@ -1,7 +1,8 @@
 import React, { useContext } from 'react'
 import { ShaderContext } from './../ModelProvider'
 import CollapsibleGroup from './CollapsibleGroup'
-
+import { useEffect } from 'react'
+import { parseHexColor, generateTextureData } from '../../texture'
 
 function ColorValue({ value, onChange }) {
   const label = 'Color'
@@ -53,12 +54,31 @@ function ColorPointControls({ addPoint, removePoint }) {
   )
 }
 
+function useTextureBuilder() {
+  const ctx = useContext(ShaderContext)
+  const [colorPoints] = ctx.color.colorPoints
+  const [, setTextureData] = ctx.color.textureData
+
+  useEffect(() => {
+    const cp = colorPoints.map(o => {
+      return {
+        color: parseHexColor(o.hex),
+        position: o.position,
+      }
+    })
+
+    const newTextureData = generateTextureData(cp)
+    setTextureData(newTextureData)
+  }, [colorPoints, setTextureData])
+}
+
 export default function ColorMap() {
   const ctx = useContext(ShaderContext)
   const [colorPoints, setColorPoints] = ctx.color.colorPoints
 
   const minPoints = 2
 
+  useTextureBuilder()
 
   function handleFieldChange(e, idx) {
     const newValue = e.target.value
@@ -75,8 +95,12 @@ export default function ColorMap() {
       }
     }).call()
 
-    colorPoints[idx] = nextObj
-    setColorPoints(colorPoints)
+    // https://stackoverflow.com/questions/54620928/useeffect-hook-not-firing-after-state-change/54621059#54621059
+    // When updating an array stored in state, a new array must be created for a change to be detected
+    // Otherwise, effects dependant on the state will not trigger on update
+    const nextColorPoints = [...colorPoints]
+    nextColorPoints[idx] = nextObj
+    setColorPoints(nextColorPoints)
   }
 
   function addPoint() {
