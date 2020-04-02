@@ -3,6 +3,25 @@ import { ShaderContext } from './../ModelProvider'
 import CollapsibleGroup from './CollapsibleGroup'
 import { useEffect } from 'react'
 import { parseHexColor, generateTextureData } from '../../texture'
+import { Interps } from './../../interp'
+
+function CurveSelector({ value, onChange }) {
+  return (
+    <div className='field-container'>
+      <label htmlFor='curves'>Curve</label>
+      <select id='curves' onChange={onChange} value={value}>
+        {Object.keys(Interps).map((item, i) => {
+          let obj = Interps[item]
+          return (
+            <option key={i} id={obj.value} value={obj.value}>
+              {obj.name}
+            </option>
+          )
+        })}
+      </select>
+    </div>
+  )
+}
 
 function ColorValue({ value, onChange }) {
   const label = 'Color'
@@ -57,6 +76,7 @@ function ColorPointControls({ addPoint, removePoint }) {
 function useTextureBuilder() {
   const ctx = useContext(ShaderContext)
   const [colorPoints] = ctx.color.colorPoints
+  const [curve] = ctx.color.curve
   const [, setTextureData] = ctx.color.textureData
 
   useEffect(() => {
@@ -67,9 +87,16 @@ function useTextureBuilder() {
       }
     })
 
-    const newTextureData = generateTextureData(cp)
+    const newTextureData = generateTextureData(cp, curve)
     setTextureData(newTextureData)
-  }, [colorPoints, setTextureData])
+  }, [colorPoints, setTextureData, curve])
+}
+
+function useCurveSelector() {
+  const ctx = useContext(ShaderContext)
+  const [curve, setCurve] = ctx.color.curve
+
+  return [curve, setCurve]
 }
 
 export default function ColorMap() {
@@ -79,6 +106,8 @@ export default function ColorMap() {
   const minPoints = 2
 
   useTextureBuilder()
+
+  const [curve, setCurve] = useCurveSelector()
 
   function handleFieldChange(e, idx) {
     const newValue = e.target.value
@@ -122,12 +151,18 @@ export default function ColorMap() {
     setColorPoints(colorPoints)
   }
 
+  function handleCurveSelectorChange(e) {
+    const newValue = e.target.value
+    setCurve(newValue)
+  }
+
   return (
     <CollapsibleGroup title='Color mapping'>
       <ColorPointControls addPoint={addPoint} removePoint={removePoint} />
       {colorPoints.map((o, i) => (
         <CombinedColorField key={i} combinedColorObj={o} handleFieldChange={handleFieldChange} idx={i} />
       ))}
+      <CurveSelector value={curve} onChange={handleCurveSelectorChange} />
     </CollapsibleGroup>
   )
 }

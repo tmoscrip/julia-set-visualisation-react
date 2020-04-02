@@ -1,6 +1,7 @@
 import { mapNDArray } from './helpers'
+import { Interps } from './interp'
 
-export const TEX_WIDTH = 512
+export const TEX_WIDTH = 2048
 export const TEX_CHANNELS = 4
 
 // TODO: investigate color conversion algorithms:
@@ -28,28 +29,39 @@ export function parseHexColor(colorString) {
   return [0, 0, 0, 255]
 }
 
-export function generateTextureData(colorPoints) {
-  const c1 = colorPoints[0].color
-  const c2 = colorPoints[1].color
-
-  const lerpReduceArrays = (a, b, steps) => {
-    const lerp = (a, b, frac) => {
-      return a * frac + b * (1 - frac)
-    }
-
-    let out = []
-    for (let i = 0; i < steps; i++) {
-      let tmp = []
-      for (let j = 0; j < a.length; j++) {
-        tmp[j] = lerp(a[j], b[j], i / steps)
+export function generateTextureData(colorPoints, curveName) {
+  function findClosestPair(arr, num) {
+    for (let i = 0; i < arr.length; i++) {
+      let cur = arr[i]
+      let next = arr[i + 1]
+      if (cur <= num && next > num) {
+        return [i, i + 1]
       }
-      out[i] = tmp
     }
-
-    return out
   }
 
-  const texLerp = lerpReduceArrays(c1, c2, TEX_WIDTH)
+  const interp = Interps[curveName]
+  const interpFn = interp.fn
+  const sortedColorPoints = colorPoints.sort((a, b) => parseFloat(a.position) - parseFloat(b.position))
+  const sortedPositions = sortedColorPoints.map(a => parseFloat(a.position))
+  let texLerp = []
+
+  for (let i = 0; i < TEX_WIDTH; i++) {
+    let mapPct = i / TEX_WIDTH
+    let closetPairIdxs = findClosestPair(sortedPositions, mapPct)
+    let c1 = sortedColorPoints[closetPairIdxs[0]]
+    let c1pos = parseFloat(c1.position)
+    let c2 = sortedColorPoints[closetPairIdxs[1]]
+    let c2pos = parseFloat(c2.position)
+    let localMapPct = (mapPct - c1pos) / Math.abs(c1pos - c2pos)
+
+    let tmp = []
+    for (let c = 0; c < c1.color.length; c++) {
+      tmp[c] = interpFn(c1.color[c], c2.color[c], localMapPct)
+    }
+    texLerp[i] = tmp
+  }
+
   const tex2D = mapNDArray(texLerp, i => Math.round(i))
 
   const TEX_SIZE = TEX_WIDTH * TEX_CHANNELS

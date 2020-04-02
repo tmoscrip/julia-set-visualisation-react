@@ -10,7 +10,6 @@ function ControlPanel({ children }) {
   function Spacer({ size }) {
     return <div style={{ marginBottom: size }} />
   }
-  // TODO: Convert integer field values to glsl floats
 
   return (
     <CollapsiblePanel styleClass='control-panel'>
