@@ -159,6 +159,12 @@ Control panel fields
   padding: 0.5rem;
 }
 
+.colormap-img {
+  width: 100%;
+  height: 20px;
+  object-fit: fill;
+}
+
 /*
 Human-readable polynomial formula
 */

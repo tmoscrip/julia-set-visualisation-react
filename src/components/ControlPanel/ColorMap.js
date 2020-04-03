@@ -4,6 +4,9 @@ import CollapsibleGroup from './CollapsibleGroup'
 import { useEffect } from 'react'
 import { parseHexColor, generateTextureData } from '../../texture'
 import { Interps } from './../../interp'
+import { ColorSpaces } from './../../colorspace'
+import { TEX_WIDTH, TEX_HEIGHT } from './../../texture'
+import UPNG from 'upng'
 
 function CurveSelector({ value, onChange }) {
   return (
@@ -73,11 +76,35 @@ function ColorPointControls({ addPoint, removePoint }) {
   )
 }
 
+function ColorMapImage({ textureBase64 }) {
+  return textureBase64 !== null ? (
+    <img className='colormap-img' alt='' src={`data:image/png;base64,${textureBase64}`} />
+  ) : null
+}
+
+function ColorSpaceSelector({ value, onChange }) {
+  return (
+    <div className='field-container'>
+      <label htmlFor='colorspace'>Colour space</label>
+      <select id='colorspace' onChange={onChange} value={value}>
+        {ColorSpaces.map((item, i) => {
+          let name = item.name
+          return (
+            <option key={i} id={name} value={name}>
+              {name}
+            </option>
+          )
+        })}
+      </select>
+    </div>
+  )
+}
 function useTextureBuilder() {
   const ctx = useContext(ShaderContext)
   const [colorPoints] = ctx.color.colorPoints
   const [curve] = ctx.color.curve
-  const [, setTextureData] = ctx.color.textureData
+  const [colorSpace] = ctx.color.colorSpace
+  const [textureData, setTextureData] = ctx.color.textureData
 
   useEffect(() => {
     const cp = colorPoints.map(o => {
@@ -86,10 +113,23 @@ function useTextureBuilder() {
         position: o.position,
       }
     })
-
-    const newTextureData = generateTextureData(cp, curve)
+    const newTextureData = generateTextureData(cp, curve, colorSpace)
     setTextureData(newTextureData)
-  }, [colorPoints, setTextureData, curve])
+  }, [colorPoints, curve, colorSpace, setTextureData])
+
+  return textureData
+}
+
+function useTextureBase64() {
+  const ctx = useContext(ShaderContext)
+  const [textureData] = ctx.color.textureData
+
+  if (textureData !== '') {
+    const pngArrayBuffer = UPNG.encode(textureData, TEX_WIDTH, TEX_HEIGHT, 0, [])
+    return btoa(String.fromCharCode.apply(null, new Uint8Array(pngArrayBuffer)))
+  }
+
+  return null
 }
 
 function useCurveSelector() {
@@ -99,15 +139,22 @@ function useCurveSelector() {
   return [curve, setCurve]
 }
 
+function useColorSpaceSelector() {
+  const ctx = useContext(ShaderContext)
+  const [colorSpace, setColorSpace] = ctx.color.colorSpace
+
+  return [colorSpace, setColorSpace]
+}
+
 export default function ColorMap() {
   const ctx = useContext(ShaderContext)
   const [colorPoints, setColorPoints] = ctx.color.colorPoints
-
   const minPoints = 2
 
   useTextureBuilder()
-
+  const textureBase64 = useTextureBase64()
   const [curve, setCurve] = useCurveSelector()
+  const [colorSpace, setColorSpace] = useColorSpaceSelector()
 
   function handleFieldChange(e, idx) {
     const newValue = e.target.value
@@ -156,6 +203,12 @@ export default function ColorMap() {
     setCurve(newValue)
   }
 
+  function handleColorSpaceSelectorChange(e) {
+    const newValue = e.target.value
+    console.log(newValue)
+    setColorSpace(newValue)
+  }
+
   return (
     <CollapsibleGroup title='Color mapping'>
       <ColorPointControls addPoint={addPoint} removePoint={removePoint} />
@@ -163,6 +216,8 @@ export default function ColorMap() {
         <CombinedColorField key={i} combinedColorObj={o} handleFieldChange={handleFieldChange} idx={i} />
       ))}
       <CurveSelector value={curve} onChange={handleCurveSelectorChange} />
+      <ColorSpaceSelector value={colorSpace} onChange={handleColorSpaceSelectorChange} />
+      <ColorMapImage textureBase64={textureBase64} />
     </CollapsibleGroup>
   )
 }

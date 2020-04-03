@@ -87,23 +87,16 @@ function ModelProvider({ children }) {
         },
         {
           hex: '#FF0000',
-          position: '0.25',
-        },
-        {
-          hex: '#00FF00',
           position: '0.5',
         },
         {
-          hex: '#0000FF',
-          position: '0.75',
-        },
-        {
-          hex: '#FFFFFF',
-          position: '1',
+          hex: '#00FF00',
+          position: '1.0',
         },
       ]),
       curve: useState('linear'),
-      textureData: useState(),
+      colorSpace: useState('RGB'),
+      textureData: useState(''),
     },
     time: {
       startedAt: useState(Date.now()),
