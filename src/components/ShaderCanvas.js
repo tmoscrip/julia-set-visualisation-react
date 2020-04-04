@@ -1,8 +1,9 @@
 import React, { useRef, useEffect, useContext, useState } from 'react'
 import { glDrawFrame } from '../webgl'
 import { ShaderContext, contextToValueObject } from './ModelProvider'
-import DebugFrame from './DebugFrame'
-import ControlPanel from './ControlPanel/ControlPanel'
+import MyGUI from './MyGUI'
+import { parseHexColor } from '../texture'
+import { generateTextureData } from './../texture'
 
 function scaleViewportByAspectRatio({ width, height }) {
   function getOrientation() {
@@ -98,6 +99,25 @@ function useAspectRatioScaling() {
   }, [])
 }
 
+function useTextureBuilder() {
+  const ctx = useContext(ShaderContext)
+  const [colorPoints] = ctx.color.colorPoints
+  const [curve] = ctx.color.curve
+  const [colorModel] = ctx.color.colorModel
+  const [, setTextureData] = ctx.color.textureData
+
+  useEffect(() => {
+    const cp = colorPoints.map(o => {
+      return {
+        color: parseHexColor(o.hex),
+        position: o.position,
+      }
+    })
+    const newTextureData = generateTextureData(cp, curve, colorModel)
+    setTextureData(newTextureData)
+  }, [colorPoints, curve, colorModel, setTextureData])
+}
+
 export default function ShaderCanvas() {
   const ctx = useContext(ShaderContext)
 
@@ -106,6 +126,9 @@ export default function ShaderCanvas() {
 
   // Initialise canvas and webgl
   const canvasRef = useGlCanvas()
+
+  // Build colour mapping texture
+  useTextureBuilder()
 
   // Start rendering
   const [frameCount, lastFrameTime] = useJuliaAnimation()
@@ -207,9 +230,7 @@ export default function ShaderCanvas() {
         onMouseUp={endDrag}
         ref={canvasRef}
       />
-      <ControlPanel>
-        <DebugFrame frameCount={frameCount} frameTime={Date.now() - lastFrameTime} />
-      </ControlPanel>
+      <MyGUI />
     </>
   )
 }

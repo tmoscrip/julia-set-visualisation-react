@@ -1,5 +1,6 @@
 import React from 'react'
 import './App.scss'
+import './components/gui/gui.scss'
 import ModelProvider from './components/ModelProvider'
 import ShaderCanvas from './components/ShaderCanvas'
 

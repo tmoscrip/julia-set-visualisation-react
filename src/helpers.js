@@ -19,3 +19,7 @@ export function findClosestPair(arr, num) {
     }
   }
 }
+
+export function lowerTrim(str) {
+  return str.trim().toLowerCase()
+}

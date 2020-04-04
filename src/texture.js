@@ -1,6 +1,6 @@
 import { mapNDArray, findClosestPair } from './helpers'
 import { Interps } from './interp'
-import { ColorSpaces, hsv2rgb, rgb2hsv } from './colorspace'
+import { hsv2rgb, rgb2hsv } from './colorspace'
 
 export const TEX_WIDTH = 2048
 export const TEX_HEIGHT = 1
@@ -27,7 +27,7 @@ export function parseHexColor(colorString) {
   return [0, 0, 0]
 }
 
-export function generateTextureData(colorPoints, curveName, colorSpace) {
+export function generateTextureData(colorPoints, curveName, colorModel) {
   const inputColorSpace = 'RGB'
   const interp = Interps[curveName].fn
   const sortedColorPoints = colorPoints.sort((a, b) => parseFloat(a.position) - parseFloat(b.position))
@@ -35,12 +35,11 @@ export function generateTextureData(colorPoints, curveName, colorSpace) {
 
   // Convert all colorPoints to target color space
   const convertedColorPoints =
-    colorSpace !== inputColorSpace
+    colorModel !== inputColorSpace
       ? sortedColorPoints.map(item => {
           return { ...item, color: rgb2hsv(item.color) }
         })
       : sortedColorPoints
-  console.log(convertedColorPoints)
 
   // Peform interpolation on each channel in each color
   let texLerp = []
@@ -65,11 +64,9 @@ export function generateTextureData(colorPoints, curveName, colorSpace) {
     }
     texLerp[i] = tmp
   }
-  console.log(texLerp)
 
   // Convert back into RGB
-  const texRGB = colorSpace !== inputColorSpace ? texLerp.map(item => hsv2rgb(item)) : texLerp
-  console.log(texRGB)
+  const texRGB = colorModel !== inputColorSpace ? texLerp.map(item => hsv2rgb(item)) : texLerp
   // Append alpha channel
   const withAlpha = texRGB.map(item => [...item, 255])
 

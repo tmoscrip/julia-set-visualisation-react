@@ -82,7 +82,7 @@ function ModelProvider({ children }) {
     color: {
       colorPoints: useState([
         {
-          hex: '#000000',
+          hex: '#FFFFFF',
           position: '0',
         },
         {
@@ -90,13 +90,13 @@ function ModelProvider({ children }) {
           position: '0.5',
         },
         {
-          hex: '#00FF00',
+          hex: '#FFFF00',
           position: '1.0',
         },
       ]),
       curve: useState('linear'),
-      colorSpace: useState('RGB'),
-      textureData: useState(''),
+      colorModel: useState('RGB'),
+      textureData: useState([255, 255, 255]),
     },
     time: {
       startedAt: useState(Date.now()),
