@@ -62,17 +62,17 @@ function ModelProvider({ children }) {
     gl: useState(null), // WebGL context of the canvas
     julia: {
       c: {
-        x: useState('-0.8'),
-        y: useState('sin(u_time)'),
+        x: useState('-0.2'),
+        y: useState('0.4*cos(u_time) + sin(u_time)'),
       },
-      coefficients: useState('1, 0, 0, 1'),
+      coefficients: useState('1/2, 2/3, 0 , 0, 1'),
       escapeRadius: useState('20'),
       maxIterations: useState('50'),
       useSmoothing: useState(true),
     },
     viewport: {
-      width: useState('5'),
-      height: useState('5'),
+      width: useState('7'),
+      height: useState('7'),
       translate: {
         x: useState('0'),
         y: useState('0'),
@@ -82,15 +82,11 @@ function ModelProvider({ children }) {
     color: {
       colorPoints: useState([
         {
-          hex: '#FFFFFF',
+          hex: '#000000',
           position: '0',
         },
         {
           hex: '#FF0000',
-          position: '0.5',
-        },
-        {
-          hex: '#FFFF00',
           position: '1.0',
         },
       ]),
