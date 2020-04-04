@@ -1,5 +1,6 @@
 import { math } from './math'
 import { color } from './color'
+import EscapeRadius from './../components/gui/julia/EscapeRadius'
 
 /*
   Ints are not implictly cast to floats in WebGL, any value which is passed to
@@ -140,20 +141,23 @@ vec4 julia(vec2 z, vec2 c) {
 // Smooth coloring function
 // http://linas.org/art-gallery/escape/escape.html
 // https://en.wikipedia.org/wiki/Mandelbrot_set#Continuous_(smooth)_coloring
-const smoothIterations = `
-float smoothIterations(vec2 z, int iterations) {
-  // sqrt of inner term removed using log simplification rules.
-  // sqrt is equivilent to raising to power 0.5 therefore dividing
-  // by 2 or multiplying by 0.5 avoids an inefficient sqrt calculation
-  float log_zn = log(z.x * z.x + z.y * z.y) / 2.;
-  float nu = log(log_zn / log(2.)) / log(2.);
-  // Rearranging the potential function.
-  // Dividing log_zn by log(2) instead of log(N = 1<<8)
-  // because we want the entire palette to range from the
-  // center to radius 2, NOT our bailout radius.
-  return float(iterations) + 1. - nu;
+// http://www.iquilezles.org/www/articles/mset_smooth/mset_smooth.htm
+function smoothIterations(julia) {
+  const { coefficients, escapeRadius } = julia
+  const degree = (coefficients.match(/,/g) || []).length.toString()
+
+  return `
+  float smoothIterations(vec2 z, int iterations) {
+    float mag = complexMag(z);
+    float logmag = log(mag);
+    float logbound = log(${fixWebGlInts(escapeRadius)});
+    float top = log(logmag/logbound);
+    float f = top/log(${fixWebGlInts(degree)});
+
+    return float(iterations) - f;
+  }
+  `
 }
-`
 
 //
 // JULIA MAIN FUNCTION
@@ -182,7 +186,7 @@ ${maxIterations(ctx.julia.maxIterations)}
 ${uniforms}
 ${math}
 ${color}
-${smoothIterations}
+${smoothIterations(ctx.julia)}
 ${julia(ctx)}
 ${main(ctx)}
 `

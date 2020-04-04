@@ -65,7 +65,7 @@ function ModelProvider({ children }) {
         x: useState('-0.8'),
         y: useState('sin(u_time)'),
       },
-      coefficients: useState('1, 0, 1'),
+      coefficients: useState('1, 0, 0, 1'),
       escapeRadius: useState('20'),
       maxIterations: useState('50'),
       useSmoothing: useState(true),
