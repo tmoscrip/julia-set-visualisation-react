@@ -4,6 +4,7 @@ import { ShaderContext, contextToValueObject } from './ModelProvider'
 import MyGUI from './MyGUI'
 import { parseHexColor } from '../texture'
 import { generateTextureData } from './../texture'
+import { useWindowSize } from './Hooks'
 
 function scaleViewportByAspectRatio({ width, height }) {
   function getOrientation() {
@@ -180,6 +181,11 @@ export default function ShaderCanvas() {
     const canvas = document.getElementsByClassName('glcanvas')[0]
     const [canvasWidth, canvasHeight] = [canvas.offsetWidth, canvas.offsetHeight]
 
+    // Handle error where drags ended on an element other than the canvas
+    if (dragStart === undefined || dragEnd === undefined) {
+      return
+    }
+
     // y values subtracted from canvas height to get correct locations
     // canvas dimensions are measured from top left, need to start from bottom left
     // as that's what our grid starts from
@@ -190,6 +196,7 @@ export default function ShaderCanvas() {
       y2: canvas.offsetHeight - dragEnd[1],
     }
 
+    // Prevent clicks on one point zooming into an infinitely small area
     if (dragHasNoArea(dragBox)) {
       return
     }
@@ -224,13 +231,12 @@ export default function ShaderCanvas() {
     <>
       <canvas
         className='glcanvas'
-        width='1000'
-        height='1000'
+        width={window.innerWidth}
+        height={window.innerHeight}
         onMouseDown={startDrag}
         onMouseUp={endDrag}
         ref={canvasRef}
       />
-      <MyGUI />
     </>
   )
 }

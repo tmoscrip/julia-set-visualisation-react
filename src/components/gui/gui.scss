@@ -88,15 +88,16 @@ Tooltips
 
   & span {
     visibility: hidden;
-    max-width: 280px;
-    background-color: rgba(0, 0, 0, 0.7);
+    max-width: 400px;
+    line-height: 16px;
+    background-color: rgba(0, 0, 0, 0.95);
     color: #fff;
-    text-align: center;
-    padding: 0.5rem;
-    border-radius: 0.5rem;
+    text-align: left;
+    padding: 0.3rem 0.6rem;
+    border-radius: 0.3rem;
     position: absolute;
     z-index: 1;
-    margin: 20px;
+    margin: 1rem;
   }
 
   &:hover span {

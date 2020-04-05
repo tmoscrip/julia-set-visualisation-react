@@ -57,6 +57,8 @@ function viewport({ width, height, translate }) {
 }
 
 const uniforms = `
+#define AA 0.25
+
 uniform float u_escapeRadius;
 
 uniform vec2 u_resolution;
@@ -107,7 +109,16 @@ const polyIterate = coefficients => {
 }
 
 const julia = ctx => `
-vec4 julia(vec2 z, vec2 c) {
+vec4 julia(vec2 pixel, vec2 c) {
+  ${viewport(ctx.viewport)}
+
+  vec2 uv = pixel / u_resolution;
+
+  vec2 z;
+  z.x = (XSIZE * (uv.x - .5)) + XT;
+  z.y = (YSIZE * (uv.y - .5)) + YT;
+
+
   float result;
   int iters = 0;
   vec2 zPrev = z;
@@ -164,19 +175,23 @@ function smoothIterations(julia) {
 //
 const main = ctx => `
 void main(void) {
-  ${viewport(ctx.viewport)}
-
   ${cValue(ctx.julia.c)}
+  vec4 color;
 
-  // Normalized pixel coordinates (from 0 to 1)
-  vec2 uv = gl_FragCoord.xy / u_resolution.xy;
+  #ifdef AA
+    float n;
+    for (float x = 0.0; x < 1.0; x += float(AA)) {
+        for (float y = 0.0; y < 1.0; y += float(AA)) {
+            color += julia(gl_FragCoord.xy + vec2(x, y), c);
+            n += 1.0;
+        }
+    }
+    color /= n;
+#else
+    color = julia(gl_FragCoord.xy);
+#endif
 
-  vec2 z;
-  z.x = (XSIZE * (uv.x - .5)) + XT;
-  z.y = (YSIZE * (uv.y - .5)) + YT;
-
-  vec4 col = julia(z, c);
-  gl_FragColor = col;
+  gl_FragColor = color;
 }
 `
 

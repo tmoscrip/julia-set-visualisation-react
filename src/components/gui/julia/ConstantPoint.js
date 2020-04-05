@@ -7,9 +7,9 @@ export function ConstantPointX() {
   const ctx = useContext(ShaderContext)
   const [value, setValue] = ctx.julia.c.x
 
-  const label = 'Constant X'
-  const id = lowerTrim(label)
-  const tooltip = `X (real) component of the constant point of the Julia Set function`
+  const label = 'X'
+  const id = 'constantx'
+  const tooltip = `X (real) component of the constant point C`
 
   function onChange(e) {
     const newValue = e.target.value
@@ -23,9 +23,9 @@ export function ConstantPointY() {
   const ctx = useContext(ShaderContext)
   const [value, setValue] = ctx.julia.c.y
 
-  const label = 'Constant Y'
-  const id = lowerTrim(label)
-  const tooltip = `Y (imaginary) component of the constant point of the Julia Set function`
+  const label = 'Y'
+  const id = 'constanty'
+  const tooltip = `Y (imaginary) component of the constant point C`
 
   function onChange(e) {
     const newValue = e.target.value

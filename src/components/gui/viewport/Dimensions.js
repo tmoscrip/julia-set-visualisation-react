@@ -7,8 +7,8 @@ export function ViewportWidth() {
   const ctx = useContext(ShaderContext)
   const [value, setValue] = ctx.viewport.width
 
-  const label = 'Viewport width'
-  const id = lowerTrim(label)
+  const label = 'Width'
+  const id = 'viewportwidth'
   const tooltip = 'Width of the complex plane'
 
   function onChange(e) {
@@ -23,8 +23,8 @@ export function ViewportHeight() {
   const ctx = useContext(ShaderContext)
   const [value, setValue] = ctx.viewport.height
 
-  const label = 'Viewport height'
-  const id = lowerTrim(label)
+  const label = 'Height'
+  const id = 'viewportheight'
   const tooltip = 'Height of the complex plane'
 
   function onChange(e) {

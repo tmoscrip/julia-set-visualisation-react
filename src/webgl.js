@@ -75,6 +75,7 @@ function createProgram(gl, fragCode) {
 
   if (!gl.getShaderParameter(fragShader, gl.COMPILE_STATUS)) {
     const logOutput = gl.getShaderInfoLog(fragShader)
+    console.log(logOutput)
 
     // Extract line of error from log and print that line of the frag shader code
     let idxList = []

@@ -62,10 +62,11 @@ function ModelProvider({ children }) {
     gl: useState(null), // WebGL context of the canvas
     julia: {
       c: {
-        x: useState('-0.2'),
-        y: useState('0.4*cos(u_time) + sin(u_time)'),
+        x: useState('-0.34'),
+        y: useState('0'),
+        // y: useState('0.4*cos(u_time) + sin(u_time)'),
       },
-      coefficients: useState('1/2, 2/3, 0 , 0, 1'),
+      coefficients: useState('0.8*c, 2/3, 0 , 0, 1'),
       escapeRadius: useState('20'),
       maxIterations: useState('50'),
       useSmoothing: useState(true),
@@ -87,6 +88,10 @@ function ModelProvider({ children }) {
         },
         {
           hex: '#FF0000',
+          position: '0.5',
+        },
+        {
+          hex: '#00FF00',
           position: '1.0',
         },
       ]),
