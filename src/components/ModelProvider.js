@@ -70,6 +70,7 @@ function ModelProvider({ children }) {
       escapeRadius: useState('20'),
       maxIterations: useState('50'),
       useSmoothing: useState(true),
+      msaa: useState('1x'),
     },
     viewport: {
       width: useState('7'),
