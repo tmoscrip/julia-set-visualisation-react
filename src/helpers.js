@@ -1,3 +1,4 @@
+// Map function which recurses into elements of initial array which are also arrays
 export function mapNDArray(arr, fn) {
   for (let i in arr) {
     let e = arr[i]
@@ -10,6 +11,7 @@ export function mapNDArray(arr, fn) {
   return arr
 }
 
+// Find the indexes of the two closest numbers to the provided parameter in a sorted array
 export function findClosestPair(arr, num) {
   for (let i = 0; i < arr.length; i++) {
     let cur = arr[i]
@@ -20,6 +22,41 @@ export function findClosestPair(arr, num) {
   }
 }
 
+// Trims spaces from string and converts to lowercase
 export function lowerTrim(str) {
-  return str.trim().toLowerCase()
+  return str.replace(/ /g, '').toLowerCase()
+}
+
+/*
+  Ints are not implictly cast to floats in WebGL, any value which is passed to
+  WebGL code for use as a float must contain a decimal point
+
+  This function appends a period to any int to avoid type errors once it's passed
+  into WebGL code
+*/
+export function fixWebGlInts(str) {
+  let finalStr = str
+  // Capture: 1. floats, 2. floats (int w/ trailing period), 3. ints
+  const anyNumberRegex = new RegExp(/\d+[.]\d+|(\d+[.])+|(\d+)/g)
+
+  // Find all matches
+  let match
+  let matches = []
+  while ((match = anyNumberRegex.exec(str)) !== null) {
+    matches.push(match)
+  }
+
+  // Filter out floats
+  matches = matches.filter(m => !m[0].includes('.'))
+
+  // How many extra characters have been inserted
+  let insertedCount = 0
+  for (let i in matches) {
+    let m = matches[i]
+    let insertAt = m['index'] + m[0].length + insertedCount
+    finalStr = finalStr.slice(0, insertAt) + '.' + finalStr.slice(insertAt, finalStr.length)
+    insertedCount += 1
+  }
+
+  return finalStr
 }

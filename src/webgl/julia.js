@@ -1,41 +1,7 @@
 import { math } from './math'
 import { color } from './color'
-import EscapeRadius from './../components/gui/julia/EscapeRadius'
-
-/*
-  Ints are not implictly cast to floats in WebGL, any value which is passed to
-  WebGL code for use as a float must contain a decimal point
-
-  This function appends a period to any int to avoid type errors once it's passed
-  into WebGL code
-*/
-function fixWebGlInts(str) {
-  let finalStr = str
-  // Capture: 1. floats, 2. floats (int w/ trailing period), 3. ints
-  const anyNumberRegex = new RegExp(/\d+[.]\d+|(\d+[.])+|(\d+)/g)
-
-  // Find all matches
-  let match
-  let matches = []
-  while ((match = anyNumberRegex.exec(str)) !== null) {
-    matches.push(match)
-  }
-
-  // Filter out floats
-  matches = matches.filter(m => !m[0].includes('.'))
-
-  // How many extra characters have been inserted
-  let insertedCount = 0
-  for (let i in matches) {
-    let m = matches[i]
-    let insertAt = m['index'] + m[0].length + insertedCount
-    finalStr = finalStr.slice(0, insertAt) + '.' + finalStr.slice(insertAt, finalStr.length)
-    insertedCount += 1
-  }
-
-  return finalStr
-}
-
+import { fixWebGlInts } from './../helpers'
+import { msaaOptions } from '../components/gui/julia/MSAA'
 // GLSL 'for' loops can only be indexed up to a constant value
 // Passing in the max iteration count through a uniform encounters an error
 // Therefore this function constructs a constant value definition
@@ -49,15 +15,22 @@ function cValue({ x, y }) {
 
 function viewport({ width, height, translate }) {
   return `
-  float XSIZE = ${fixWebGlInts(width)};
-  float YSIZE = ${fixWebGlInts(height)};
-  float XT = ${fixWebGlInts(translate.x)};
-  float YT = ${fixWebGlInts(translate.y)};
+  vec2 size = vec2(${fixWebGlInts(width)}, ${fixWebGlInts(height)});
+  vec2 translate = vec2(${fixWebGlInts(translate.x)}, ${fixWebGlInts(translate.y)});
   `
 }
 
+const antialiasing = msaaStateValue => {
+  const { aaFrac } = msaaOptions.find(item => item.name === msaaStateValue)
+
+  if (aaFrac !== 1) {
+    return `#define AA ${aaFrac}`
+  } else {
+    return ''
+  }
+}
+
 const uniforms = `
-#define AA 0.25
 
 uniform float u_escapeRadius;
 
@@ -109,15 +82,14 @@ const polyIterate = coefficients => {
 }
 
 const julia = ctx => `
-vec4 julia(vec2 pixel, vec2 c) {
+vec4 julia(vec2 pixel) {
   ${viewport(ctx.viewport)}
+  ${cValue(ctx.julia.c)}
 
+  // Map pixel value [0, canvasWidth], [0, canvasHeight] into ranges [0, 1]
   vec2 uv = pixel / u_resolution;
 
-  vec2 z;
-  z.x = (XSIZE * (uv.x - .5)) + XT;
-  z.y = (YSIZE * (uv.y - .5)) + YT;
-
+  vec2 z = (size * (uv - 0.5)) + translate;
 
   float result;
   int iters = 0;
@@ -175,21 +147,20 @@ function smoothIterations(julia) {
 //
 const main = ctx => `
 void main(void) {
-  ${cValue(ctx.julia.c)}
   vec4 color;
 
   #ifdef AA
-    float n;
-    for (float x = 0.0; x < 1.0; x += float(AA)) {
-        for (float y = 0.0; y < 1.0; y += float(AA)) {
-            color += julia(gl_FragCoord.xy + vec2(x, y), c);
+    float n; // Number of loops
+    for (float x = 0.0; x < 1.0; x += AA) {
+        for (float y = 0.0; y < 1.0; y += AA) {
+            color += julia(gl_FragCoord.xy + vec2(x, y));
             n += 1.0;
         }
     }
-    color /= n;
-#else
+    color /= n; // Normalise colour
+  #else
     color = julia(gl_FragCoord.xy);
-#endif
+  #endif
 
   gl_FragColor = color;
 }
@@ -197,6 +168,7 @@ void main(void) {
 
 export const buildFragCode = ctx => `
 ${headers}
+${antialiasing(ctx.julia.msaa)}
 ${maxIterations(ctx.julia.maxIterations)}
 ${uniforms}
 ${math}

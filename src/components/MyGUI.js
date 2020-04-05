@@ -13,6 +13,7 @@ import LockAspectRatio from './gui/viewport/LockAspectRatio'
 import ColorCurveSelector from './gui/colourmapping/ColorCurveSelector'
 import ColorModelSelector from './gui/colourmapping/ColorModelSelector'
 import ColorMapFolder from './gui/colourmapping/ColorMapFolder'
+import MSAA from './gui/julia/MSAA'
 
 export default function MyGUI() {
   return (
@@ -26,6 +27,7 @@ export default function MyGUI() {
         <MaxIterations />
         <EscapeRadius />
         <SmoothingToggle />
+        <MSAA />
         <TimeScale />
       </Folder>
       <Folder title='Viewport'>

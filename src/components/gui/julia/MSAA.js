@@ -3,11 +3,11 @@ import OptionSelector from './../base_components/OptionSelector'
 import { ShaderContext } from './../../ModelProvider'
 
 export const msaaOptions = [
-  { name: '1x', value: 1 },
-  { name: '2x', value: 2 },
-  { name: '4x', value: 4 },
-  { name: '8x', value: 8 },
-  { name: '16x', value: 16 },
+  { name: '1x', aaFrac: 1 },
+  { name: '2x', aaFrac: 1 / 2 },
+  { name: '4x', aaFrac: 1 / 4 },
+  { name: '8x', aaFrac: 1 / 8 },
+  { name: '16x', aaFrac: 1 / 16 },
 ]
 
 export default function MSAA() {
