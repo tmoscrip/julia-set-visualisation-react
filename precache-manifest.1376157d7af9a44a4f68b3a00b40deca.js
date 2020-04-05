@@ -1,10 +1,10 @@
 self.__precacheManifest = (self.__precacheManifest || []).concat([
   {
-    "revision": "72077840c7e3c3df7c98b80423ec87d9",
+    "revision": "3fb9397ed97d5c88b29f82d292721f12",
     "url": "/julia-frontend/index.html"
   },
   {
-    "revision": "60a89a404e3e03e21b9b",
+    "revision": "7d2a1ca530333a4220bb",
     "url": "/julia-frontend/static/css/main.78a548b3.chunk.css"
   },
   {
@@ -16,8 +16,8 @@ self.__precacheManifest = (self.__precacheManifest || []).concat([
     "url": "/julia-frontend/static/js/2.1f93f7eb.chunk.js.LICENSE"
   },
   {
-    "revision": "60a89a404e3e03e21b9b",
-    "url": "/julia-frontend/static/js/main.6782816f.chunk.js"
+    "revision": "7d2a1ca530333a4220bb",
+    "url": "/julia-frontend/static/js/main.b9178a20.chunk.js"
   },
   {
     "revision": "a7e4c2518e8e3d0d6ed7",
