@@ -1,22 +1,22 @@
 {
   "files": {
-    "main.css": "/julia-frontend/static/css/main.a5aef560.chunk.css",
-    "main.js": "/julia-frontend/static/js/main.cbdeb769.chunk.js",
-    "main.js.map": "/julia-frontend/static/js/main.cbdeb769.chunk.js.map",
+    "main.css": "/julia-frontend/static/css/main.78a548b3.chunk.css",
+    "main.js": "/julia-frontend/static/js/main.6782816f.chunk.js",
+    "main.js.map": "/julia-frontend/static/js/main.6782816f.chunk.js.map",
     "runtime-main.js": "/julia-frontend/static/js/runtime-main.a642d25b.js",
     "runtime-main.js.map": "/julia-frontend/static/js/runtime-main.a642d25b.js.map",
     "static/js/2.1f93f7eb.chunk.js": "/julia-frontend/static/js/2.1f93f7eb.chunk.js",
     "static/js/2.1f93f7eb.chunk.js.map": "/julia-frontend/static/js/2.1f93f7eb.chunk.js.map",
     "index.html": "/julia-frontend/index.html",
-    "precache-manifest.12d331b4abcc75acbd3b4dc5bba8b99b.js": "/julia-frontend/precache-manifest.12d331b4abcc75acbd3b4dc5bba8b99b.js",
+    "precache-manifest.527f7cd365eba214c69f597a39e9b072.js": "/julia-frontend/precache-manifest.527f7cd365eba214c69f597a39e9b072.js",
     "service-worker.js": "/julia-frontend/service-worker.js",
-    "static/css/main.a5aef560.chunk.css.map": "/julia-frontend/static/css/main.a5aef560.chunk.css.map",
+    "static/css/main.78a548b3.chunk.css.map": "/julia-frontend/static/css/main.78a548b3.chunk.css.map",
     "static/js/2.1f93f7eb.chunk.js.LICENSE": "/julia-frontend/static/js/2.1f93f7eb.chunk.js.LICENSE"
   },
   "entrypoints": [
     "static/js/runtime-main.a642d25b.js",
     "static/js/2.1f93f7eb.chunk.js",
-    "static/css/main.a5aef560.chunk.css",
-    "static/js/main.cbdeb769.chunk.js"
+    "static/css/main.78a548b3.chunk.css",
+    "static/js/main.6782816f.chunk.js"
   ]
 }
