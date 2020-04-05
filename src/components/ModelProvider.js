@@ -63,7 +63,7 @@ function ModelProvider({ children }) {
     julia: {
       coefficients: useState('c, 2/3, -4*c/3, 0 , 0, 1'),
       c: {
-        x: useState('0.3+0.2*cos(u_time)'),
+        x: useState('0.1-cos(u_time)'),
         y: useState('0.4-sin(u_time/2)'),
       },
       maxIterations: useState('20'),
@@ -88,10 +88,10 @@ function ModelProvider({ children }) {
         },
         {
           hex: '#FF0000',
-          position: '0.5',
+          position: '0.3',
         },
         {
-          hex: '#00FF00',
+          hex: '#FFFF00',
           position: '1.0',
         },
       ]),
