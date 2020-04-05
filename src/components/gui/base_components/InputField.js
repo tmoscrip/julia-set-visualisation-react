@@ -9,10 +9,14 @@ export default function InputField({ type, label, name, tooltip, id, value, onCh
   label = label || null
   tooltip = tooltip || null
 
+  function def(e) {
+    e.stopPropagation()
+  }
+
   return (
     <Item>
       {label ? <Label htmlFor={id} text={label} tooltip={tooltip} /> : null}
-      <input type={type} name={name} id={id} value={value} checked={value} onChange={onChange} />
+      <input type={type} name={name} id={id} value={value} checked={value} onChange={onChange} onClick={def} />
     </Item>
   )
 }

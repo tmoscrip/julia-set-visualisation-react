@@ -151,8 +151,9 @@ void main(void) {
 
   #ifdef AA
     float n; // Number of loops
-    for (float x = 0.0; x < 1.0; x += AA) {
-        for (float y = 0.0; y < 1.0; y += AA) {
+    // Offset from center of pixel
+    for (float x = -0.5; x < 0.5; x += AA) {
+        for (float y = -0.5; y < 0.5; y += AA) {
             color += julia(gl_FragCoord.xy + vec2(x, y));
             n += 1.0;
         }
