@@ -1,7 +1,6 @@
 import React, { useContext } from 'react'
 import { ShaderContext } from './../../ModelProvider'
 import InputField from '../base_components/InputField'
-import { lowerTrim } from './../../../helpers'
 
 export function ConstantPointX() {
   const ctx = useContext(ShaderContext)

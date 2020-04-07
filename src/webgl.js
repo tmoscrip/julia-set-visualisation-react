@@ -1,6 +1,5 @@
 import { buildFragCode, vertCode } from './webgl/julia'
 import { TEX_WIDTH } from './texture'
-import EscapeRadius from './components/gui/julia/EscapeRadius'
 
 //
 // WebGL initialisation and render loop

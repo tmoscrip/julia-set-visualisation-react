@@ -1,16 +1,9 @@
-import React, { useState } from 'react'
 import { PropTypes } from 'prop-types'
+import React from 'react'
+import { useToggle } from '../../Hooks'
 
 export default function Folder({ title, children }) {
-  const [closed, setClosed] = useState(false)
-
-  function toggle(e) {
-    if (closed) {
-      setClosed(false)
-    } else {
-      setClosed(true)
-    }
-  }
+  const [closed, toggle] = useToggle(false)
 
   return (
     <li className='folder'>

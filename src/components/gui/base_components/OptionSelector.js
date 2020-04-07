@@ -1,14 +1,11 @@
-import React from 'react'
 import PropTypes from 'prop-types'
+import React from 'react'
+
 import Item from './Item'
 import Label from './Label'
 
 function Option({ item }) {
-  return (
-    <option key={item} value={item}>
-      {item}
-    </option>
-  )
+  return <option value={item}>{item}</option>
 }
 
 export default function OptionSelector({ label, tooltip, id, options, value, onChange }) {

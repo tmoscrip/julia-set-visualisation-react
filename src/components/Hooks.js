@@ -25,8 +25,41 @@ export function useWindowSize() {
 
     window.addEventListener('resize', handleResize)
     return () => window.removeEventListener('resize', handleResize)
-  // eslint-disable-next-line react-hooks/exhaustive-deps
+    // eslint-disable-next-line react-hooks/exhaustive-deps
   }, []) // Empty array ensures that effect is only run on mount and unmount
 
   return windowSize
+}
+
+export function useToggle(initial, whenSetToTrueCb, whenSetToFalseCb) {
+  whenSetToTrueCb = whenSetToTrueCb || null
+  whenSetToFalseCb = whenSetToFalseCb || null
+
+  if (typeof initial !== 'boolean') {
+    throw new Error('Non-boolean supplied for useToggle initial value')
+  }
+
+  const [bool, setBool] = useState(initial)
+
+  const toggle = (e) => {
+    if (bool === true) {
+      setBool(false)
+      if (whenSetToFalseCb !== null) {
+        if (typeof whenSetToFalseCb !== 'function') {
+          throw new Error('whenSetToFalseCb not a function')
+        }
+        whenSetToFalseCb(e)
+      }
+    } else {
+      setBool(true)
+      if (whenSetToTrueCb !== null) {
+        if (typeof whenSetToTrueCb !== 'function') {
+          throw new Error('whenSetToTrueCb not a function')
+        }
+        whenSetToTrueCb(e)
+      }
+    }
+  }
+
+  return [bool, toggle]
 }

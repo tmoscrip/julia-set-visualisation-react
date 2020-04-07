@@ -1,10 +1,8 @@
 import React, { useRef, useEffect, useContext, useState } from 'react'
 import { glDrawFrame } from '../webgl'
 import { ShaderContext, contextToValueObject } from './ModelProvider'
-import MyGUI from './MyGUI'
 import { parseHexColor } from '../texture'
 import { generateTextureData } from './../texture'
-import { useWindowSize } from './Hooks'
 
 function scaleViewportByAspectRatio({ width, height }) {
   function getOrientation() {
@@ -70,7 +68,7 @@ function useJuliaAnimation() {
         setLastFrameTime(Date.now())
         const glObj = contextToValueObject(ctx)
         glDrawFrame(glObj)
-        setFrameCount(frameCount => frameCount + 1)
+        setFrameCount((frameCount) => frameCount + 1)
       }
       // The frame request runs itself recursively
       animateRef.current = requestAnimationFrame(animate)
@@ -108,7 +106,7 @@ function useTextureBuilder() {
   const [, setTextureData] = ctx.color.textureData
 
   useEffect(() => {
-    const cp = colorPoints.map(o => {
+    const cp = colorPoints.map((o) => {
       return {
         color: parseHexColor(o.hex),
         position: o.position,

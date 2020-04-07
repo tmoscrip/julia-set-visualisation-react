@@ -19,7 +19,7 @@ export default function MSAA() {
   const label = 'Anti-aliasing'
   const id = 'msaa'
   const tooltip =
-    'Level of multisample anti-aliasing applied to render. High levels may result in considerable slowdown'
+    'Level of supersample anti-aliasing applied to render. High levels may result in considerable slowdown'
 
   function onChange(e) {
     const newValue = e.target.value

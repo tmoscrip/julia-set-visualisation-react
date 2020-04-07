@@ -1,6 +1,5 @@
 import React, { useContext } from 'react'
 import { ShaderContext } from './../../ModelProvider'
-import { lowerTrim } from './../../../helpers'
 import InputField from './../base_components/InputField'
 
 export function ViewportWidth() {

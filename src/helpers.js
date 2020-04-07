@@ -27,6 +27,14 @@ export function lowerTrim(str) {
   return str.replace(/ /g, '').toLowerCase()
 }
 
+// Is the item a useState array?
+// Perform checks on requirements for hasSetState beforehand
+export const isUseStateArray = item => {
+  // Check to see if array has useState set function within
+  const hasSetState = item => typeof item[1] === 'function' && item[1].name.startsWith('bound ')
+  return Array.isArray(item) && item.length === 2 && hasSetState(item)
+}
+
 /*
   Ints are not implictly cast to floats in WebGL, any value which is passed to
   WebGL code for use as a float must contain a decimal point
