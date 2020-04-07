@@ -7,7 +7,7 @@ import MaxIterations from './gui/julia/MaxIterations'
 import EscapeRadius from './gui/julia/EscapeRadius'
 import SmoothingToggle from './gui/julia/SmoothingToggle'
 import TimeScale from './gui/julia/TimeScale'
-import { ViewportWidth, ViewportHeight } from './gui/viewport/Dimensions'
+import DimensionsFolder from './gui/viewport/Dimensions'
 import { TranslateX, TranslateY } from './gui/viewport/Translate'
 import LockAspectRatio from './gui/viewport/LockAspectRatio'
 import ColorCurveSelector from './gui/colourmapping/ColorCurveSelector'
@@ -31,10 +31,7 @@ export default function MyGUI() {
         <TimeScale />
       </Folder>
       <Folder title='Viewport'>
-        <Folder title='Dimensions'>
-          <ViewportWidth />
-          <ViewportHeight />
-        </Folder>
+        <DimensionsFolder />
         <Folder title='Translate'>
           <TranslateX />
           <TranslateY />

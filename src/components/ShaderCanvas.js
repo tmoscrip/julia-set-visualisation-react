@@ -3,8 +3,9 @@ import { glDrawFrame } from '../webgl'
 import { ShaderContext, contextToValueObject } from './ModelProvider'
 import { parseHexColor } from '../texture'
 import { generateTextureData } from './../texture'
+import { useWindowSize } from './Hooks'
 
-function scaleViewportByAspectRatio({ width, height }) {
+export function scaleViewportByAspectRatio({ width, height, anchor }) {
   function getOrientation() {
     const canvas = document.getElementsByClassName('glcanvas')[0]
     const [canvasWidth, canvasHeight] = [canvas.offsetWidth, canvas.offsetHeight]
@@ -17,22 +18,22 @@ function scaleViewportByAspectRatio({ width, height }) {
     // return early if 0 to avoid div by 0 errors
     if (canvasHeight === 0 || canvasWidth === 0) return 1
     if (orientation === 'landscape') {
-      return canvasWidth / canvasHeight
-    } else if (orientation === 'portrait') {
       return canvasHeight / canvasWidth
+    } else if (orientation === 'portrait') {
+      return canvasWidth / canvasHeight
     }
     // Fallback if orientation does not match one of two expected values
     return 1
   }
 
-  const canvasOrientation = getOrientation()
-  const aspectRatio = getAspectRatio(canvasOrientation)
+  anchor = anchor || getOrientation()
+  const aspectRatio = getAspectRatio(anchor)
   // For landscape, width should not change
   // For portrait, height should not change
-  if (canvasOrientation === 'landscape') {
-    height *= 1 / aspectRatio
-  } else if (canvasOrientation === 'portrait') {
-    width *= 1 / aspectRatio
+  if (anchor === 'landscape') {
+    height = width * aspectRatio
+  } else if (anchor === 'portrait') {
+    width = height * aspectRatio
   }
   return { width, height }
 }
@@ -90,9 +91,9 @@ function useAspectRatioScaling() {
   const [height, setHeight] = ctx.viewport.height
 
   useEffect(() => {
-    const vp = scaleViewportByAspectRatio({ width, height })
-    setWidth(vp.width)
-    setHeight(vp.height)
+    const newViewport = scaleViewportByAspectRatio({ width, height })
+    setWidth(newViewport.width)
+    setHeight(newViewport.height)
     // Effect can't fire when width/height changes, results in loop
     // eslint-disable-next-line react-hooks/exhaustive-deps
   }, [])
@@ -119,6 +120,7 @@ function useTextureBuilder() {
 
 export default function ShaderCanvas() {
   const ctx = useContext(ShaderContext)
+  const windowSize = useWindowSize()
 
   const [lockAspectRatio] = ctx.viewport.lockAspectRatio
   const [dragStart, setDragStart] = useState()
@@ -229,8 +231,8 @@ export default function ShaderCanvas() {
     <>
       <canvas
         className='glcanvas'
-        width={window.innerWidth}
-        height={window.innerHeight}
+        width={windowSize.width}
+        height={windowSize.height}
         onMouseDown={startDrag}
         onMouseUp={endDrag}
         ref={canvasRef}
