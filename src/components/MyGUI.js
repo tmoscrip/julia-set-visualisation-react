@@ -14,10 +14,12 @@ import ColorCurveSelector from './gui/colourmapping/ColorCurveSelector'
 import ColorModelSelector from './gui/colourmapping/ColorModelSelector'
 import ColorMapFolder from './gui/colourmapping/ColorMapFolder'
 import MSAA from './gui/julia/MSAA'
+import PauseButton from './gui/other/PauseButton'
 
 export default function MyGUI() {
   return (
     <GUI>
+      <PauseButton />
       <Folder title='Julia Variables'>
         <Coefficients />
         <Folder title='Constant Point'>
