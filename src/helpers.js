@@ -74,14 +74,3 @@ export function fixWebGlInts(str) {
 
   return finalStr
 }
-
-// Returns the value of obj[array[0]], obj[array[1]], ... , obj[array[array.length]]
-export function propertyFromArray(obj, array) {
-  return array.reduce((obj, keyName) => {
-    if (keyName in obj) {
-      return obj[keyName]
-    } else {
-      throw new Error(`Key ${keyName} not found`)
-    }
-  }, obj)
-}
