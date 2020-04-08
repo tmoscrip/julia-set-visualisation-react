@@ -15,6 +15,7 @@ import ColorModelSelector from './gui/colourmapping/ColorModelSelector'
 import ColorMapFolder from './gui/colourmapping/ColorMapFolder'
 import MSAA from './gui/julia/MSAA'
 import PauseButton from './gui/other/PauseButton'
+import PresetFolder from './gui/presets/PresetFolder'
 
 export default function MyGUI() {
   return (
@@ -45,7 +46,7 @@ export default function MyGUI() {
         <ColorCurveSelector />
         <ColorModelSelector />
       </Folder>
-      <Folder title='Presets'></Folder>
+      <PresetFolder />
     </GUI>
   )
 }

@@ -4,7 +4,6 @@ import { ShaderContext, contextToValueObject } from './ModelProvider'
 import { parseHexColor } from '../texture'
 import { generateTextureData } from './../texture'
 import { useWindowSize } from './Hooks'
-import { useCallback } from 'react'
 
 export function scaleViewportByAspectRatio({ width, height, anchor }) {
   function getOrientation() {
@@ -87,6 +86,7 @@ function useJuliaAnimation() {
     animateRef.current = requestAnimationFrame(animate)
     // Return cleanup as callback
     return () => cancelAnimationFrame(animateRef.current)
+    // eslint-disable-next-line react-hooks/exhaustive-deps
   }, [ctx])
 
   return [frameCount, lastFrameTime]
@@ -142,7 +142,7 @@ export default function ShaderCanvas() {
   useScaleInitialRenderViewport()
 
   // Start rendering
-  const [frameCount, lastFrameTime] = useJuliaAnimation()
+  useJuliaAnimation()
 
   function startDrag(e) {
     const loc = [e.clientX, e.clientY]
