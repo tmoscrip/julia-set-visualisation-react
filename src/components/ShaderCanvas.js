@@ -4,6 +4,7 @@ import { ShaderContext, contextToValueObject } from './ModelProvider'
 import { parseHexColor } from '../texture'
 import { generateTextureData } from './../texture'
 import { useWindowSize } from './Hooks'
+import { useCallback } from 'react'
 
 export function scaleViewportByAspectRatio({ width, height, anchor }) {
   function getOrientation() {
@@ -57,36 +58,36 @@ function useJuliaAnimation() {
   const ctx = useContext(ShaderContext)
   const animateRef = useRef()
   const [frameCount, setFrameCount] = useState(0)
-  const [lastFrameTime, setLastFrameTime] = useState(Date.now())
+  const [lastFrameTime, setLastFrameTime] = ctx.time.lastFrameTime
   const [elapsed, setElapsed] = ctx.time.elapsed
   const [timeScale] = ctx.time.timeScale
   const [paused] = ctx.time.paused
   const [gl] = ctx.gl
 
-  useEffect(() => {
-    // Define function to be run on every frame render
-    const animate = () => {
-      if (paused === false && gl !== null) {
-        const timeElapsedThisFrame = Date.now() - lastFrameTime
-        const elapsedDelta = (parseFloat(timeElapsedThisFrame * timeScale))
-        if (parseFloat(elapsedDelta)) {
-          setElapsed(elapsed + elapsedDelta)
-        }
-        setLastFrameTime(Date.now())
-        const glObj = contextToValueObject(ctx)
-        glDrawFrame(glObj)
-        setFrameCount((frameCount) => frameCount + 1)
+  // Define function to be run on every frame render
+  const animate = () => {
+    if (paused === false && gl !== null) {
+      setLastFrameTime(Date.now())
+      const timeElapsedThisFrame = Date.now() - lastFrameTime
+      const elapsedDelta = parseFloat(timeElapsedThisFrame * timeScale)
+      if (parseFloat(elapsedDelta)) {
+        setElapsed(elapsed + elapsedDelta)
       }
-      // The frame request runs itself recursively
-      animateRef.current = requestAnimationFrame(animate)
-    }
 
+      const glObj = contextToValueObject(ctx)
+      glDrawFrame(glObj)
+      setFrameCount((frameCount) => frameCount + 1)
+    }
+    // The frame request runs itself recursively
+    animateRef.current = requestAnimationFrame(animate)
+  }
+
+  useEffect(() => {
     // Start frame requests
     animateRef.current = requestAnimationFrame(animate)
-
     // Return cleanup as callback
     return () => cancelAnimationFrame(animateRef.current)
-  }, [ctx, paused, gl])
+  }, [ctx])
 
   return [frameCount, lastFrameTime]
 }

@@ -7,6 +7,7 @@ export default function PauseButton() {
   const ctx = useContext(ShaderContext)
   const [paused, setPaused] = ctx.time.paused
   const text = paused ? 'Resume' : 'Pause'
+  const className = 'btn-full'
 
   function toggle() {
     if (paused) {
@@ -18,7 +19,7 @@ export default function PauseButton() {
 
   return (
     <Item>
-      <Button text={text} onClick={toggle} />
+      <Button text={text} onClick={toggle} className={className} />
     </Item>
   )
 }
