@@ -29,9 +29,9 @@ export function lowerTrim(str) {
 
 // Is the item a useState array?
 // Perform checks on requirements for hasSetState beforehand
-export const isUseStateArray = item => {
+export const isUseStateArray = (item) => {
   // Check to see if array has useState set function within
-  const hasSetState = item => typeof item[1] === 'function' && item[1].name.startsWith('bound ')
+  const hasSetState = (item) => typeof item[1] === 'function' && item[1].name.startsWith('bound ')
   return Array.isArray(item) && item.length === 2 && hasSetState(item)
 }
 
@@ -44,6 +44,7 @@ export const isUseStateArray = item => {
 */
 export function fixWebGlInts(str) {
   let finalStr = str
+
   // Capture: 1. floats, 2. floats (int w/ trailing period), 3. ints
   const anyNumberRegex = new RegExp(/\d+[.]\d+|(\d+[.])+|(\d+)/g)
 
@@ -55,15 +56,20 @@ export function fixWebGlInts(str) {
   }
 
   // Filter out floats
-  matches = matches.filter(m => !m[0].includes('.'))
+  matches = matches.filter((m) => !m[0].includes('.'))
 
   // How many extra characters have been inserted
   let insertedCount = 0
-  for (let i in matches) {
-    let m = matches[i]
-    let insertAt = m['index'] + m[0].length + insertedCount
-    finalStr = finalStr.slice(0, insertAt) + '.' + finalStr.slice(insertAt, finalStr.length)
-    insertedCount += 1
+  try {
+    for (let i in matches) {
+      let m = matches[i]
+      let insertAt = m['index'] + m[0].length + insertedCount
+      finalStr = finalStr.slice(0, insertAt) + '.' + finalStr.slice(insertAt, finalStr.length)
+      insertedCount += 1
+    }
+  } catch {
+    // Shader will fail to compile and pause given an unfixable string
+    return str
   }
 
   return finalStr

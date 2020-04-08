@@ -55,17 +55,23 @@ function useGlCanvas() {
 
 function useJuliaAnimation() {
   const ctx = useContext(ShaderContext)
-
   const animateRef = useRef()
   const [frameCount, setFrameCount] = useState(0)
-  const [lastFrameTime, setLastFrameTime] = useState(0)
-  const paused = ctx.time.paused[0]
-  const gl = ctx.gl[0]
+  const [lastFrameTime, setLastFrameTime] = useState(Date.now())
+  const [elapsed, setElapsed] = ctx.time.elapsed
+  const [timeScale] = ctx.time.timeScale
+  const [paused] = ctx.time.paused
+  const [gl] = ctx.gl
 
   useEffect(() => {
     // Define function to be run on every frame render
     const animate = () => {
       if (paused === false && gl !== null) {
+        const timeElapsedThisFrame = Date.now() - lastFrameTime
+        const elapsedDelta = (parseFloat(timeElapsedThisFrame * timeScale))
+        if (parseFloat(elapsedDelta)) {
+          setElapsed(elapsed + elapsedDelta)
+        }
         setLastFrameTime(Date.now())
         const glObj = contextToValueObject(ctx)
         glDrawFrame(glObj)
@@ -85,7 +91,7 @@ function useJuliaAnimation() {
   return [frameCount, lastFrameTime]
 }
 
-function useAspectRatioScaling() {
+function useScaleInitialRenderViewport() {
   const ctx = useContext(ShaderContext)
   const [width, setWidth] = ctx.viewport.width
   const [height, setHeight] = ctx.viewport.height
@@ -131,11 +137,11 @@ export default function ShaderCanvas() {
   // Build colour mapping texture
   useTextureBuilder()
 
+  // Scale initial viewport size to respect aspect ratio
+  useScaleInitialRenderViewport()
+
   // Start rendering
   const [frameCount, lastFrameTime] = useJuliaAnimation()
-
-  // Scale initial viewport size to respect aspect ratio
-  useAspectRatioScaling()
 
   function startDrag(e) {
     const loc = [e.clientX, e.clientY]

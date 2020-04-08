@@ -1,4 +1,4 @@
-import React, { useRef } from 'react'
+import React from 'react'
 import GUI from './gui/GUI'
 import Folder from './gui/base_components/Folder'
 import Coefficients from './gui/julia/Coefficients'

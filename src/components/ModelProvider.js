@@ -90,8 +90,7 @@ function ModelProvider({ children }) {
     time: {
       startedAt: useState(Date.now()),
       paused: useState(false),
-      lastPausedAt: useState(0),
-      pauseDuration: useState(0),
+      elapsed: useState(0),
       timeScale: useState('0.5'),
     },
   }

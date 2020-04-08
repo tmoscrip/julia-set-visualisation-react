@@ -110,6 +110,7 @@ function bindColorMap(gl, textureData) {
 function setUniforms(shaderProgram, ctx) {
   const { canvasRef, gl, julia, time, viewport } = ctx
   const { escapeRadius, maxIterations } = julia
+  const { elapsed } = time
 
   const escapeRadiusUniform = gl.getUniformLocation(shaderProgram, 'u_escapeRadius')
   gl.uniform1f(escapeRadiusUniform, escapeRadius)
@@ -121,8 +122,7 @@ function setUniforms(shaderProgram, ctx) {
   gl.uniform2fv(resolutionUniform, [canvasRef.width, canvasRef.height])
 
   const startedAtUniform = gl.getUniformLocation(shaderProgram, 'u_time')
-  const secondsSinceStart = (getMillisElapsed(time.startedAt, time.pauseDuration) / 1000) * time.timeScale
-  gl.uniform1f(startedAtUniform, secondsSinceStart)
+  gl.uniform1f(startedAtUniform, elapsed/10000)
 
   const widthUniform = gl.getUniformLocation(shaderProgram, 'u_width')
   gl.uniform1f(widthUniform, viewport.width)
