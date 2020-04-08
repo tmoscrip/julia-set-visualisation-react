@@ -31,12 +31,12 @@ export function generateTextureData(colorPoints, curveName, colorModel) {
   const inputColorSpace = 'RGB'
   const interp = Interps[curveName].fn
   const sortedColorPoints = colorPoints.sort((a, b) => parseFloat(a.position) - parseFloat(b.position))
-  const sortedPositions = sortedColorPoints.map(a => parseFloat(a.position))
+  const sortedPositions = sortedColorPoints.map((a) => parseFloat(a.position))
 
   // Convert all colorPoints to target color space
   const convertedColorPoints =
     colorModel !== inputColorSpace
-      ? sortedColorPoints.map(item => {
+      ? sortedColorPoints.map((item) => {
           return { ...item, color: rgb2hsv(item.color) }
         })
       : sortedColorPoints
@@ -52,10 +52,14 @@ export function generateTextureData(colorPoints, curveName, colorModel) {
     const c2pos = parseFloat(c2.position)
     const localMapPct = (mapPct - c1pos) / Math.abs(c1pos - c2pos)
 
-    // This check accounts for the 'undefined' hue values of black/white
+    // This check accounts for the 'undefined' hue values of achromatic shades
     // We carry the hue of the colour we interpolate from and interp on sat/value
     if (c2.color[0] === -1) {
       c2.color[0] = c1.color[0]
+    }
+
+    if (c1.color[0] === -1) {
+      c1.color[0] = c2.color[0]
     }
 
     const tmp = []
@@ -66,11 +70,11 @@ export function generateTextureData(colorPoints, curveName, colorModel) {
   }
 
   // Convert back into RGB
-  const texRGB = colorModel !== inputColorSpace ? texLerp.map(item => hsv2rgb(item)) : texLerp
+  const texRGB = colorModel !== inputColorSpace ? texLerp.map((item) => hsv2rgb(item)) : texLerp
   // Append alpha channel
-  const withAlpha = texRGB.map(item => [...item, 255])
+  const withAlpha = texRGB.map((item) => [...item, 255])
 
-  const tex2D = mapNDArray(withAlpha, i => Math.round(i))
+  const tex2D = mapNDArray(withAlpha, (i) => Math.round(i))
 
   const TEX_SIZE = TEX_WIDTH * TEX_CHANNELS
   const textureData = new Uint8Array(TEX_SIZE)
