@@ -56,7 +56,6 @@ function useGlCanvas() {
 function useJuliaAnimation() {
   const ctx = useContext(ShaderContext)
   const animateRef = useRef()
-  const [frameCount, setFrameCount] = useState(0)
   const [lastFrameTime, setLastFrameTime] = useState(Date.now())
   const [elapsed, setElapsed] = ctx.time.elapsed
   const [timeScale] = ctx.time.timeScale
@@ -66,17 +65,26 @@ function useJuliaAnimation() {
   useEffect(() => {
     // Define function to be run on every frame render
     const animate = () => {
-      if (paused === false && gl !== null) {
-        const timeElapsedThisFrame = Date.now() - lastFrameTime
-        const elapsedDelta = (parseFloat(timeElapsedThisFrame * timeScale))
+      // Do nothing if unable to start opengl
+      if (gl === null) {
+        return
+      }
+
+      // Update passing of time
+      const timeElapsedThisFrame = Date.now() - lastFrameTime
+      setLastFrameTime(Date.now())
+
+      if (!paused) {
+        const elapsedDelta = parseFloat(timeElapsedThisFrame * timeScale)
         if (parseFloat(elapsedDelta)) {
           setElapsed(elapsed + elapsedDelta)
         }
-        setLastFrameTime(Date.now())
+
+        // Draw new frame
         const glObj = contextToValueObject(ctx)
         glDrawFrame(glObj)
-        setFrameCount((frameCount) => frameCount + 1)
       }
+
       // The frame request runs itself recursively
       animateRef.current = requestAnimationFrame(animate)
     }
@@ -86,9 +94,7 @@ function useJuliaAnimation() {
 
     // Return cleanup as callback
     return () => cancelAnimationFrame(animateRef.current)
-  }, [ctx, paused, gl])
-
-  return [frameCount, lastFrameTime]
+  }, [ctx, gl, paused, setElapsed, timeScale])
 }
 
 function useScaleInitialRenderViewport() {
@@ -141,7 +147,7 @@ export default function ShaderCanvas() {
   useScaleInitialRenderViewport()
 
   // Start rendering
-  const [frameCount, lastFrameTime] = useJuliaAnimation()
+  useJuliaAnimation()
 
   function startDrag(e) {
     const loc = [e.clientX, e.clientY]
