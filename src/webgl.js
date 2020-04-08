@@ -122,7 +122,7 @@ function setUniforms(shaderProgram, ctx) {
   gl.uniform2fv(resolutionUniform, [canvasRef.width, canvasRef.height])
 
   const startedAtUniform = gl.getUniformLocation(shaderProgram, 'u_time')
-  gl.uniform1f(startedAtUniform, elapsed/10000)
+  gl.uniform1f(startedAtUniform, elapsed/5000)
 
   const widthUniform = gl.getUniformLocation(shaderProgram, 'u_width')
   gl.uniform1f(widthUniform, viewport.width)

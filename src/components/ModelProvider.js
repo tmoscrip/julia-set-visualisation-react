@@ -91,7 +91,7 @@ function ModelProvider({ children }) {
       startedAt: useState(Date.now()),
       paused: useState(false),
       elapsed: useState(0),
-      timeScale: useState('0.5'),
+      timeScale: useState('1'),
     },
   }
 
