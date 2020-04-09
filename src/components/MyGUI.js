@@ -17,7 +17,7 @@ import MSAA from './gui/julia/MSAA'
 import PauseButton from './gui/other/PauseButton'
 import PresetFolder from './gui/presets/PresetFolder'
 import { useToggle } from './Hooks'
-import ToggleMenuButton from './gui/other/ToggleMenuButton';
+import ToggleMenuButton from './gui/other/ToggleMenuButton'
 
 export default function MyGUI() {
   const [hideMenu, toggleMenu] = useToggle(false)
@@ -25,7 +25,7 @@ export default function MyGUI() {
   return (
     <GUI>
       <PauseButton />
-      <ToggleMenuButton onClick={toggleMenu}/>
+      <ToggleMenuButton onClick={toggleMenu} />
       <div style={{ display: hideMenu ? 'none' : 'inherit' }}>
         <Folder title='Julia Variables'>
           <Coefficients />
@@ -39,7 +39,7 @@ export default function MyGUI() {
           <MSAA />
           <TimeScale />
         </Folder>
-        <Folder title='Viewport'>
+        <Folder title='Viewport' startClosed>
           <DimensionsFolder />
           <Folder title='Translate'>
             <TranslateX />
@@ -47,7 +47,7 @@ export default function MyGUI() {
           </Folder>
           <LockAspectRatio />
         </Folder>
-        <Folder title='Colour Mapping'>
+        <Folder title='Colour Mapping' startClosed>
           <ColorMapFolder />
           <ColorCurveSelector />
           <ColorModelSelector />

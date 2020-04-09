@@ -65,8 +65,8 @@ function useJuliaAnimation() {
 
   // Define function to be run on every frame render
   const animate = () => {
+    setLastFrameTime(Date.now())
     if (paused === false && gl !== null) {
-      setLastFrameTime(Date.now())
       const timeElapsedThisFrame = Date.now() - lastFrameTime
       const elapsedDelta = parseFloat(timeElapsedThisFrame * timeScale)
       if (parseFloat(elapsedDelta)) {
@@ -77,8 +77,6 @@ function useJuliaAnimation() {
       glDrawFrame(glObj)
       setFrameCount((frameCount) => frameCount + 1)
     }
-    // The frame request runs itself recursively
-    animateRef.current = requestAnimationFrame(animate)
   }
 
   useEffect(() => {
