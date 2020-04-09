@@ -19,13 +19,7 @@ function makePresetObject(name, _ctx) {
 }
 
 function namedPresetExists(name) {
-  const presets = getPresetArray()
-  for (const i in presets) {
-    if (presets[i].name === name) {
-      return true
-    }
-  }
-  return false
+  return getPresetArray().filter((preset) => preset.name !== name)
 }
 
 function getPresetArray() {

@@ -16,37 +16,44 @@ import ColorMapFolder from './gui/colourmapping/ColorMapFolder'
 import MSAA from './gui/julia/MSAA'
 import PauseButton from './gui/other/PauseButton'
 import PresetFolder from './gui/presets/PresetFolder'
+import { useToggle } from './Hooks'
+import ToggleMenuButton from './gui/other/ToggleMenuButton';
 
 export default function MyGUI() {
+  const [hideMenu, toggleMenu] = useToggle(false)
+
   return (
     <GUI>
       <PauseButton />
-      <Folder title='Julia Variables'>
-        <Coefficients />
-        <Folder title='Constant Point'>
-          <ConstantPointX />
-          <ConstantPointY />
+      <ToggleMenuButton onClick={toggleMenu}/>
+      <div style={{ display: hideMenu ? 'none' : 'inherit' }}>
+        <Folder title='Julia Variables'>
+          <Coefficients />
+          <Folder title='Constant Point'>
+            <ConstantPointX />
+            <ConstantPointY />
+          </Folder>
+          <MaxIterations />
+          <EscapeRadius />
+          <SmoothingToggle />
+          <MSAA />
+          <TimeScale />
         </Folder>
-        <MaxIterations />
-        <EscapeRadius />
-        <SmoothingToggle />
-        <MSAA />
-        <TimeScale />
-      </Folder>
-      <Folder title='Viewport'>
-        <DimensionsFolder />
-        <Folder title='Translate'>
-          <TranslateX />
-          <TranslateY />
+        <Folder title='Viewport'>
+          <DimensionsFolder />
+          <Folder title='Translate'>
+            <TranslateX />
+            <TranslateY />
+          </Folder>
+          <LockAspectRatio />
         </Folder>
-        <LockAspectRatio />
-      </Folder>
-      <Folder title='Colour Mapping'>
-        <ColorMapFolder />
-        <ColorCurveSelector />
-        <ColorModelSelector />
-      </Folder>
-      <PresetFolder />
+        <Folder title='Colour Mapping'>
+          <ColorMapFolder />
+          <ColorCurveSelector />
+          <ColorModelSelector />
+        </Folder>
+        <PresetFolder />
+      </div>
     </GUI>
   )
 }
