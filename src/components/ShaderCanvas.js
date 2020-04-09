@@ -56,7 +56,6 @@ function useGlCanvas() {
 function useJuliaAnimation() {
   const ctx = useContext(ShaderContext)
   const animateRef = useRef()
-  const [frameCount, setFrameCount] = useState(0)
   const [lastFrameTime, setLastFrameTime] = ctx.time.lastFrameTime
   const [elapsed, setElapsed] = ctx.time.elapsed
   const [timeScale] = ctx.time.timeScale
@@ -65,18 +64,26 @@ function useJuliaAnimation() {
 
   // Define function to be run on every frame render
   const animate = () => {
+    // Do nothing if gl not available
+    if (gl === null) {
+      return
+    }
+
     setLastFrameTime(Date.now())
-    if (paused === false && gl !== null) {
+    // Advance time if not paused
+    if (!paused) {
       const timeElapsedThisFrame = Date.now() - lastFrameTime
       const elapsedDelta = parseFloat(timeElapsedThisFrame * timeScale)
       if (parseFloat(elapsedDelta)) {
         setElapsed(elapsed + elapsedDelta)
       }
-
-      const glObj = contextToValueObject(ctx)
-      glDrawFrame(glObj)
-      setFrameCount((frameCount) => frameCount + 1)
     }
+
+    // Draw frames even when 'paused'
+    // Pausing only stops time advancing, we want to see the results
+    // of manipulations even while 'paused'
+    const glObj = contextToValueObject(ctx)
+    glDrawFrame(glObj)
   }
 
   useEffect(() => {
@@ -86,8 +93,6 @@ function useJuliaAnimation() {
     return () => cancelAnimationFrame(animateRef.current)
     // eslint-disable-next-line react-hooks/exhaustive-deps
   }, [ctx])
-
-  return [frameCount, lastFrameTime]
 }
 
 function useScaleInitialRenderViewport() {
