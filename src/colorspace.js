@@ -48,7 +48,7 @@ export const ColorSpaces = [
 // TODO: convert white->white correctly
 export function rgb2hsv(rgbColor) {
   // Normalise colours to 0-1 range
-  const [r, g, b] = rgbColor.map(c => c / 255)
+  const [r, g, b] = rgbColor.map((c) => c / 255)
   let h, s, v
 
   // white
@@ -69,16 +69,20 @@ export function rgb2hsv(rgbColor) {
 
   s = max !== 0 ? delta / max : 0
   v = max
-
-  if (r === max) {
-    h = (g - b) / delta
-  } else if (g === max) {
-    h = 2 + (b - r) / delta
+  if (s !== 0) {
+    if (r === max) {
+      h = (g - b) / delta
+    } else if (g === max) {
+      h = 2 + (b - r) / delta
+    } else {
+      h = 4 + (r - g) / delta
+    }
+    h = h * 60
+    if (h < 0) h += 360
   } else {
-    h = 4 + (r - g) / delta
+    // greys have undefined hue
+    h = -1
   }
-  h = h * 60
-  if (h < 0) h += 360
 
   return [h, s, v]
 }

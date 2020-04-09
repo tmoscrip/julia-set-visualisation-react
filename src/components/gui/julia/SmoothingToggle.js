@@ -10,7 +10,7 @@ export default function SmoothingToggle() {
   const label = 'Julia smoothing'
   const id = lowerTrim(label)
   const tooltip =
-    'Toggle Julia escape iteration renormalisation\n\nWhen on, produces smooth gradients between the boundry of n and n+1 iterations before escape. May behave unexpectedly for coefficents != 1, 0, 1'
+    'Toggle Julia escape iteration renormalisation. Produces smooth gradients between the boundries of n and n+1 iterations before escape'
 
   function onChange(e) {
     const newValue = e.target.checked

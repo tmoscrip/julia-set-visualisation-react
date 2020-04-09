@@ -3,6 +3,7 @@ import { ShaderContext } from './../../ModelProvider'
 import Folder from '../base_components/Folder'
 import ColorPointControls from './ColorPointControls'
 import ColorPointItem from './ColorPointItem'
+import ColorMapRender from './ColorMapRender'
 
 export default function ColorMapFolder() {
   const ctx = useContext(ShaderContext)

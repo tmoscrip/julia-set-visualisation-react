@@ -1,11 +1,11 @@
 import React, { useRef, useEffect, useContext, useState } from 'react'
 import { glDrawFrame } from '../webgl'
 import { ShaderContext, contextToValueObject } from './ModelProvider'
-import MyGUI from './MyGUI'
 import { parseHexColor } from '../texture'
 import { generateTextureData } from './../texture'
+import { useWindowSize } from './Hooks'
 
-function scaleViewportByAspectRatio({ width, height }) {
+export function scaleViewportByAspectRatio({ width, height, anchor }) {
   function getOrientation() {
     const canvas = document.getElementsByClassName('glcanvas')[0]
     const [canvasWidth, canvasHeight] = [canvas.offsetWidth, canvas.offsetHeight]
@@ -18,22 +18,22 @@ function scaleViewportByAspectRatio({ width, height }) {
     // return early if 0 to avoid div by 0 errors
     if (canvasHeight === 0 || canvasWidth === 0) return 1
     if (orientation === 'landscape') {
-      return canvasWidth / canvasHeight
-    } else if (orientation === 'portrait') {
       return canvasHeight / canvasWidth
+    } else if (orientation === 'portrait') {
+      return canvasWidth / canvasHeight
     }
     // Fallback if orientation does not match one of two expected values
     return 1
   }
 
-  const canvasOrientation = getOrientation()
-  const aspectRatio = getAspectRatio(canvasOrientation)
+  anchor = anchor || getOrientation()
+  const aspectRatio = getAspectRatio(anchor)
   // For landscape, width should not change
   // For portrait, height should not change
-  if (canvasOrientation === 'landscape') {
-    height *= 1 / aspectRatio
-  } else if (canvasOrientation === 'portrait') {
-    width *= 1 / aspectRatio
+  if (anchor === 'landscape') {
+    height = width * aspectRatio
+  } else if (anchor === 'portrait') {
+    width = height * aspectRatio
   }
   return { width, height }
 }
@@ -55,45 +55,55 @@ function useGlCanvas() {
 
 function useJuliaAnimation() {
   const ctx = useContext(ShaderContext)
-
   const animateRef = useRef()
-  const [frameCount, setFrameCount] = useState(0)
-  const [lastFrameTime, setLastFrameTime] = useState(0)
-  const paused = ctx.time.paused[0]
-  const gl = ctx.gl[0]
+  const [lastFrameTime, setLastFrameTime] = ctx.time.lastFrameTime
+  const [elapsed, setElapsed] = ctx.time.elapsed
+  const [timeScale] = ctx.time.timeScale
+  const [paused] = ctx.time.paused
+  const [gl] = ctx.gl
 
-  useEffect(() => {
-    // Define function to be run on every frame render
-    const animate = () => {
-      if (paused === false && gl !== null) {
-        setLastFrameTime(Date.now())
-        const glObj = contextToValueObject(ctx)
-        glDrawFrame(glObj)
-        setFrameCount(frameCount => frameCount + 1)
-      }
-      // The frame request runs itself recursively
-      animateRef.current = requestAnimationFrame(animate)
+  // Define function to be run on every frame render
+  const animate = () => {
+    // Do nothing if gl not available
+    if (gl === null) {
+      return
     }
 
+    // Advance time if not paused
+    if (!paused) {
+      const timeElapsedThisFrame = Date.now() - lastFrameTime
+      const elapsedDelta = parseFloat(timeElapsedThisFrame * timeScale)
+      if (parseFloat(elapsedDelta)) {
+        setElapsed(elapsed + elapsedDelta)
+      }
+    }
+
+    // Draw frames even when 'paused'
+    // Pausing only stops time advancing, we want to see the results
+    // of manipulations even while 'paused'
+    const glObj = contextToValueObject(ctx)
+    glDrawFrame(glObj)
+    setLastFrameTime(Date.now())
+  }
+
+  useEffect(() => {
     // Start frame requests
     animateRef.current = requestAnimationFrame(animate)
-
     // Return cleanup as callback
     return () => cancelAnimationFrame(animateRef.current)
-  }, [ctx, paused, gl])
-
-  return [frameCount, lastFrameTime]
+    // eslint-disable-next-line react-hooks/exhaustive-deps
+  }, [ctx])
 }
 
-function useAspectRatioScaling() {
+function useScaleInitialRenderViewport() {
   const ctx = useContext(ShaderContext)
   const [width, setWidth] = ctx.viewport.width
   const [height, setHeight] = ctx.viewport.height
 
   useEffect(() => {
-    const vp = scaleViewportByAspectRatio({ width, height })
-    setWidth(vp.width)
-    setHeight(vp.height)
+    const newViewport = scaleViewportByAspectRatio({ width, height })
+    setWidth(newViewport.width)
+    setHeight(newViewport.height)
     // Effect can't fire when width/height changes, results in loop
     // eslint-disable-next-line react-hooks/exhaustive-deps
   }, [])
@@ -107,7 +117,7 @@ function useTextureBuilder() {
   const [, setTextureData] = ctx.color.textureData
 
   useEffect(() => {
-    const cp = colorPoints.map(o => {
+    const cp = colorPoints.map((o) => {
       return {
         color: parseHexColor(o.hex),
         position: o.position,
@@ -120,6 +130,7 @@ function useTextureBuilder() {
 
 export default function ShaderCanvas() {
   const ctx = useContext(ShaderContext)
+  const windowSize = useWindowSize()
 
   const [lockAspectRatio] = ctx.viewport.lockAspectRatio
   const [dragStart, setDragStart] = useState()
@@ -130,11 +141,11 @@ export default function ShaderCanvas() {
   // Build colour mapping texture
   useTextureBuilder()
 
-  // Start rendering
-  const [frameCount, lastFrameTime] = useJuliaAnimation()
-
   // Scale initial viewport size to respect aspect ratio
-  useAspectRatioScaling()
+  useScaleInitialRenderViewport()
+
+  // Start rendering
+  useJuliaAnimation()
 
   function startDrag(e) {
     const loc = [e.clientX, e.clientY]
@@ -180,6 +191,11 @@ export default function ShaderCanvas() {
     const canvas = document.getElementsByClassName('glcanvas')[0]
     const [canvasWidth, canvasHeight] = [canvas.offsetWidth, canvas.offsetHeight]
 
+    // Handle error where drags ended on an element other than the canvas
+    if (dragStart === undefined || dragEnd === undefined) {
+      return
+    }
+
     // y values subtracted from canvas height to get correct locations
     // canvas dimensions are measured from top left, need to start from bottom left
     // as that's what our grid starts from
@@ -190,6 +206,7 @@ export default function ShaderCanvas() {
       y2: canvas.offsetHeight - dragEnd[1],
     }
 
+    // Prevent clicks on one point zooming into an infinitely small area
     if (dragHasNoArea(dragBox)) {
       return
     }
@@ -224,13 +241,12 @@ export default function ShaderCanvas() {
     <>
       <canvas
         className='glcanvas'
-        width='1000'
-        height='1000'
+        width={windowSize.width}
+        height={windowSize.height}
         onMouseDown={startDrag}
         onMouseUp={endDrag}
         ref={canvasRef}
       />
-      <MyGUI />
     </>
   )
 }

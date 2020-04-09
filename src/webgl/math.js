@@ -8,7 +8,8 @@ const mathConstants = `
 
 //
 // COMPLEX NUMBER OPERATIONS
-// Source: https://gist.github.com/NiklasRosenstein/ee1f1b5786f94e17995361c63dafeb3f
+// Source:
+// https://gist.github.com/NiklasRosenstein/ee1f1b5786f94e17995361c63dafeb3f
 //
 const complexConjug = `
 vec2 complexConjug(in vec2 c) { 
@@ -40,9 +41,9 @@ vec2 complexAdd(vec2 z1, vec2 z2) {
 }
 `
 
-// See http://mathworld.wolfram.com/ComplexExponentiation.html
 // Raises a complex number to the power of a second complex number
 // Use vec2(x, 0) as second parameter to raise by only a real
+// See http://mathworld.wolfram.com/ComplexExponentiation.html
 const complexPower = `
 vec2 complexPower(vec2 z1, vec2 z2) {
   float a2b2 = z1.x * z1.x + z1.y * z1.y;

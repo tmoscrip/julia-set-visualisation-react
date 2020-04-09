@@ -9,8 +9,9 @@ export default function Coefficients() {
 
   const label = 'Coefficients'
   const id = lowerTrim(label)
-  const tooltip = `Comma-seperated values for the coefficients of each polynomial term. \n
-    N values applied in the order Z<sup>n-1</sup> + Z<sup>n-2</sup> + ... + Z, C`
+  const tooltip = `Comma-seperated values for the coefficients of each polynomial term. <br><br>
+    N values applied in the order Z<sup>n-1</sup> + Z<sup>n-2</sup> + ... + Z, C <br><br>
+    It is recommended to keep the coefficient of the highest term ≤1`
 
   function onChange(e) {
     const newValue = e.target.value

@@ -1,6 +1,5 @@
 import { buildFragCode, vertCode } from './webgl/julia'
 import { TEX_WIDTH } from './texture'
-import EscapeRadius from './components/gui/julia/EscapeRadius'
 
 //
 // WebGL initialisation and render loop
@@ -75,6 +74,7 @@ function createProgram(gl, fragCode) {
 
   if (!gl.getShaderParameter(fragShader, gl.COMPILE_STATUS)) {
     const logOutput = gl.getShaderInfoLog(fragShader)
+    console.log(logOutput)
 
     // Extract line of error from log and print that line of the frag shader code
     let idxList = []
@@ -110,6 +110,7 @@ function bindColorMap(gl, textureData) {
 function setUniforms(shaderProgram, ctx) {
   const { canvasRef, gl, julia, time, viewport } = ctx
   const { escapeRadius, maxIterations } = julia
+  const { elapsed } = time
 
   const escapeRadiusUniform = gl.getUniformLocation(shaderProgram, 'u_escapeRadius')
   gl.uniform1f(escapeRadiusUniform, escapeRadius)
@@ -121,8 +122,7 @@ function setUniforms(shaderProgram, ctx) {
   gl.uniform2fv(resolutionUniform, [canvasRef.width, canvasRef.height])
 
   const startedAtUniform = gl.getUniformLocation(shaderProgram, 'u_time')
-  const secondsSinceStart = (getMillisElapsed(time.startedAt, time.pauseDuration) / 1000) * time.timeScale
-  gl.uniform1f(startedAtUniform, secondsSinceStart)
+  gl.uniform1f(startedAtUniform, elapsed/5000)
 
   const widthUniform = gl.getUniformLocation(shaderProgram, 'u_width')
   gl.uniform1f(widthUniform, viewport.width)

@@ -7,44 +7,55 @@ import MaxIterations from './gui/julia/MaxIterations'
 import EscapeRadius from './gui/julia/EscapeRadius'
 import SmoothingToggle from './gui/julia/SmoothingToggle'
 import TimeScale from './gui/julia/TimeScale'
-import { ViewportWidth, ViewportHeight } from './gui/viewport/Dimensions'
+import DimensionsFolder from './gui/viewport/Dimensions'
 import { TranslateX, TranslateY } from './gui/viewport/Translate'
 import LockAspectRatio from './gui/viewport/LockAspectRatio'
 import ColorCurveSelector from './gui/colourmapping/ColorCurveSelector'
 import ColorModelSelector from './gui/colourmapping/ColorModelSelector'
 import ColorMapFolder from './gui/colourmapping/ColorMapFolder'
+import MSAA from './gui/julia/MSAA'
+import PauseButton from './gui/other/PauseButton'
+import PresetFolder from './gui/presets/PresetFolder'
+import { useToggle } from './Hooks'
+import ToggleMenuButton from './gui/other/ToggleMenuButton'
+import ColorMapRender from './gui/colourmapping/ColorMapRender';
 
 export default function MyGUI() {
+  const [hideMenu, toggleMenu] = useToggle(false)
+
   return (
     <GUI>
-      <Folder title='Julia Variables'>
-        <Coefficients />
-        <Folder title='Constant Point'>
-          <ConstantPointX />
-          <ConstantPointY />
+      <PauseButton />
+      <ToggleMenuButton onClick={toggleMenu} />
+      <div style={{ display: hideMenu ? 'none' : 'inherit' }}>
+        <Folder title='Julia Variables'>
+          <Coefficients />
+          <Folder title='Constant Point'>
+            <ConstantPointX />
+            <ConstantPointY />
+          </Folder>
+          <MaxIterations />
+          <EscapeRadius />
+          <SmoothingToggle />
+          <MSAA />
+          <TimeScale />
         </Folder>
-        <MaxIterations />
-        <EscapeRadius />
-        <SmoothingToggle />
-        <TimeScale />
-      </Folder>
-      <Folder title='Viewport'>
-        <Folder title='Dimensions'>
-          <ViewportWidth />
-          <ViewportHeight />
+        <Folder title='Viewport' startClosed>
+          <DimensionsFolder />
+          <Folder title='Translate'>
+            <TranslateX />
+            <TranslateY />
+          </Folder>
+          <LockAspectRatio />
         </Folder>
-        <Folder title='Translate'>
-          <TranslateX />
-          <TranslateY />
+        <Folder title='Colour Mapping' startClosed>
+          <ColorMapFolder />
+          <ColorCurveSelector />
+          <ColorModelSelector />
+          <ColorMapRender />
         </Folder>
-        <LockAspectRatio />
-      </Folder>
-      <Folder title='Colour Mapping'>
-        <ColorMapFolder />
-        <ColorCurveSelector />
-        <ColorModelSelector />
-      </Folder>
-      <Folder title='Presets'></Folder>
+        <PresetFolder />
+      </div>
     </GUI>
   )
 }

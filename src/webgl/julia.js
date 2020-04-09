@@ -1,40 +1,7 @@
-import { math } from './math'
+import { msaaOptions } from '../components/gui/julia/MSAA'
+import { fixWebGlInts } from './../helpers'
 import { color } from './color'
-import EscapeRadius from './../components/gui/julia/EscapeRadius'
-
-/*
-  Ints are not implictly cast to floats in WebGL, any value which is passed to
-  WebGL code for use as a float must contain a decimal point
-
-  This function appends a period to any int to avoid type errors once it's passed
-  into WebGL code
-*/
-function fixWebGlInts(str) {
-  let finalStr = str
-  // Capture: 1. floats, 2. floats (int w/ trailing period), 3. ints
-  const anyNumberRegex = new RegExp(/\d+[.]\d+|(\d+[.])+|(\d+)/g)
-
-  // Find all matches
-  let match
-  let matches = []
-  while ((match = anyNumberRegex.exec(str)) !== null) {
-    matches.push(match)
-  }
-
-  // Filter out floats
-  matches = matches.filter(m => !m[0].includes('.'))
-
-  // How many extra characters have been inserted
-  let insertedCount = 0
-  for (let i in matches) {
-    let m = matches[i]
-    let insertAt = m['index'] + m[0].length + insertedCount
-    finalStr = finalStr.slice(0, insertAt) + '.' + finalStr.slice(insertAt, finalStr.length)
-    insertedCount += 1
-  }
-
-  return finalStr
-}
+import { math } from './math'
 
 // GLSL 'for' loops can only be indexed up to a constant value
 // Passing in the max iteration count through a uniform encounters an error
@@ -49,11 +16,19 @@ function cValue({ x, y }) {
 
 function viewport({ width, height, translate }) {
   return `
-  float XSIZE = ${fixWebGlInts(width)};
-  float YSIZE = ${fixWebGlInts(height)};
-  float XT = ${fixWebGlInts(translate.x)};
-  float YT = ${fixWebGlInts(translate.y)};
+  vec2 size = vec2(${fixWebGlInts(width)}, ${fixWebGlInts(height)});
+  vec2 translate = vec2(${fixWebGlInts(translate.x)}, ${fixWebGlInts(translate.y)});
   `
+}
+
+const antialiasing = (msaaStateValue) => {
+  const { aaFrac } = msaaOptions.find((item) => item.name === msaaStateValue)
+
+  if (aaFrac !== 1) {
+    return `#define AA ${aaFrac}`
+  } else {
+    return ''
+  }
 }
 
 const uniforms = `
@@ -76,8 +51,8 @@ precision highp float;
 //
 // JULIA ITERATION FUNCTIONS
 //
-const polyIterate = coefficients => {
-  const cmplxExp = (exp, coeff) => {
+const polyIterate = (coefficients) => {
+  function cmplxExp(exp, coeff) {
     // Skip all terms with coefficient of 0
     if (parseFloat(coeff) !== 0) {
       // When exp = 0, we are handling the C value
@@ -106,13 +81,19 @@ const polyIterate = coefficients => {
   return polySource
 }
 
-const julia = ctx => `
-vec4 julia(vec2 z, vec2 c) {
+const julia = (ctx) => `
+vec4 julia(vec2 pixel) {
+  ${viewport(ctx.viewport)}
+  ${cValue(ctx.julia.c)}
+
+  // Map pixel value [0, canvasWidth], [0, canvasHeight] into ranges [0, 1]
+  vec2 uv = pixel / u_resolution;
+
+  vec2 zPrev = (size * (uv - 0.5)) + translate;
+  vec2 z = vec2(0.);
+
   float result;
   int iters = 0;
-  vec2 zPrev = z;
-  z = vec2(0.);
-
   for (int i = 0; i <= maxIterations; i++) {
     ${polyIterate(fixWebGlInts(ctx.julia.coefficients))}
     iters = i;
@@ -127,14 +108,7 @@ vec4 julia(vec2 z, vec2 c) {
   }
 
   float percent = result/float(maxIterations);
-
-  return texture2D(u_colormap, vec2(percent));
-
-  // float hue = huefn(result);
-  // float sat = satfn(result);
-  // float val = valfn(result);
-
-  // return hsv2rgb(vec3(hue, sat, val, 1.0));
+  return texture2D(u_colormap, vec2(percent));;
 }
 `
 
@@ -162,26 +136,31 @@ function smoothIterations(julia) {
 //
 // JULIA MAIN FUNCTION
 //
-const main = ctx => `
+const main = (ctx) => `
 void main(void) {
-  ${viewport(ctx.viewport)}
+  vec4 color;
 
-  ${cValue(ctx.julia.c)}
+  #ifdef AA
+    float n; // Number of loops
+    for (float x = 0.; x < 1.; x += AA) {
+        for (float y = 0.; y < 1.; y += AA) {
+            color += julia(gl_FragCoord.xy + vec2(x, y));
+            n += 1.0;
+        }
+    }
+    // Normalise colour
+    color /= n; 
+  #else
+    color = julia(gl_FragCoord.xy);
+  #endif
 
-  // Normalized pixel coordinates (from 0 to 1)
-  vec2 uv = gl_FragCoord.xy / u_resolution.xy;
-
-  vec2 z;
-  z.x = (XSIZE * (uv.x - .5)) + XT;
-  z.y = (YSIZE * (uv.y - .5)) + YT;
-
-  vec4 col = julia(z, c);
-  gl_FragColor = col;
+  gl_FragColor = color;
 }
 `
 
-export const buildFragCode = ctx => `
+export const buildFragCode = (ctx) => `
 ${headers}
+${antialiasing(ctx.julia.msaa)}
 ${maxIterations(ctx.julia.maxIterations)}
 ${uniforms}
 ${math}

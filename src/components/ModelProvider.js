@@ -1,4 +1,6 @@
 import React, { useState } from 'react'
+import { isUseStateArray } from './../helpers'
+import { PropTypes } from 'prop-types'
 
 export const ShaderContext = React.createContext()
 export const ShaderProvider = ShaderContext.Provider
@@ -7,31 +9,17 @@ export const ShaderConsumer = ShaderContext.Consumer
 /*
   Take object from context and extract the values for each setState array
   Recurse down if possilble and maintain k:v structure
+
+  Keeps object structure, but converts [state, setState]
+  Arrays to just the state value
 */
-
-// Check to see if array has useState set function within
-const hasSetState = item => {
-  return typeof item[1] === 'function' && item[1].name.startsWith('bound ')
-}
-
-// Is the item a useState array?
-// Perform checks on requirements for hasSetState beforehand
-const isUseState = item => {
-  return Array.isArray(item) && item.length === 2 && hasSetState(item)
-}
-
-// Keeps object structure, but converts [state, setState]
-// Arrays to just the state value
 export function contextToValueObject(obj) {
   const valuesObj = {}
-  for (let item in obj) {
-    if (isUseState(obj[item])) {
-      valuesObj[item] = obj[item][0]
+  for (let key in obj) {
+    if (isUseStateArray(obj[key])) {
+      valuesObj[key] = obj[key][0]
     } else {
-      // TODO: Add check on recursion case
-      // Function seems to be recursing into DOM refs
-      // leading to stack overflows (only when deployed)
-      valuesObj[item] = contextToValueObject(obj[item])
+      valuesObj[key] = contextToValueObject(obj[key])
     }
   }
 
@@ -43,14 +31,11 @@ export function contextToValueObject(obj) {
 // it into context's state through setState
 export function loadObjectIntoContext(obj, ctx) {
   for (const item in obj) {
-    if (isUseState(ctx[item])) {
+    if (isUseStateArray(ctx[item])) {
       // Call setState in ctx for each key in obj
       const setState = ctx[item][1]
       setState(obj[item])
     } else {
-      // TODO: Add check on recursion case
-      // Function seems to be recursing into DOM refs
-      // leading to stack overflows (only when deployed)
       loadObjectIntoContext(obj[item], ctx[item])
     }
   }
@@ -61,14 +46,15 @@ function ModelProvider({ children }) {
     canvasRef: useState(null), // Canvas element used for rendering the fractal
     gl: useState(null), // WebGL context of the canvas
     julia: {
+      coefficients: useState('c, 2/3, -4*c/3, 0 , 0, 1'),
       c: {
-        x: useState('-0.2'),
-        y: useState('0.4*cos(u_time) + sin(u_time)'),
+        x: useState('0.1-cos(u_time)'),
+        y: useState('0.4-sin(u_time/2)'),
       },
-      coefficients: useState('1/2, 2/3, 0 , 0, 1'),
-      escapeRadius: useState('20'),
-      maxIterations: useState('50'),
+      maxIterations: useState('20'),
+      escapeRadius: useState('200'),
       useSmoothing: useState(true),
+      msaa: useState('2x'),
     },
     viewport: {
       width: useState('7'),
@@ -87,6 +73,10 @@ function ModelProvider({ children }) {
         },
         {
           hex: '#FF0000',
+          position: '0.3',
+        },
+        {
+          hex: '#FFFF00',
           position: '1.0',
         },
       ]),
@@ -96,16 +86,18 @@ function ModelProvider({ children }) {
     },
     time: {
       startedAt: useState(Date.now()),
+      lastFrameTime: useState(Date.now()),
       paused: useState(false),
-      lastPausedAt: useState(0),
-      pauseDuration: useState(0),
-      timeScale: useState('0.5'),
+      elapsed: useState(0),
+      timeScale: useState('1'),
     },
   }
 
   return <ShaderProvider value={initModelState}>{children}</ShaderProvider>
 }
 
-ModelProvider.propTypes = {}
+ModelProvider.propTypes = {
+  children: PropTypes.node.isRequired,
+}
 
 export default ModelProvider
