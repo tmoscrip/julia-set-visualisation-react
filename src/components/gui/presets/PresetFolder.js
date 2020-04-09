@@ -1,25 +1,31 @@
 import React, { useContext, useEffect, useState } from 'react'
 import { contextToValueObject } from '../../ModelProvider'
 import { loadObjectIntoContext, ShaderContext } from './../../ModelProvider'
-import PresetButtons from './PresetButtons'
 import Folder from '../base_components/Folder'
 import PresetNameField from './PresetNameField'
 import PresetSelector from './PresetSelector'
 import PresetErrorField from './PresetErrorField'
+import { ImportExportButtons, SaveLoadButtons } from './PresetButtons'
 
 function makePresetObject(name, _ctx) {
   const ctx = contextToValueObject(_ctx)
   const { julia, viewport, color } = ctx
+  const { colorPoints, curve, colorModel } = color
   return {
     name,
     julia,
     viewport,
-    color,
+    color: {
+      colorPoints,
+      curve,
+      colorModel,
+    },
   }
 }
 
 function namedPresetExists(name) {
-  return getPresetArray().filter((preset) => preset.name !== name)
+  const nameMatch = getPresetArray().filter((preset) => preset.name === name)
+  return nameMatch.length > 0
 }
 
 function getPresetArray() {
@@ -59,28 +65,33 @@ export default function PresetFolder() {
     setSelectedPresetName(initial)
   }
 
+  function resetErrorState() {
+    setError('')
+    setPromptedToOverwrite(false)
+  }
+
   function savePreset() {
+    // Deny empty name & warn
     if (presetName === '') {
-      // Deny empty name
       setError('Cannot save without entering a name')
       return
     }
+
+    // If preset with entered name already exists, ask to overwrite
     if (namedPresetExists(presetName)) {
-      // Ask to overwrite
       if (!promptedToOverwrite) {
         setPromptedToOverwrite(true)
         setError('Click save again to overwrite existing preset')
         return
       }
-      // Delete existing preset with matching name
+      // Delete existing preset with matching name if attempting to save again
       removePresetFromArray(presetName)
     }
     // Add and update list if all checks pass
     const presetObject = makePresetObject(presetName, ctx)
     addPresetToArray(presetObject)
     updatePresetsList()
-    setError('')
-    setPromptedToOverwrite(false)
+    resetErrorState()
   }
 
   function loadPreset() {
@@ -88,20 +99,36 @@ export default function PresetFolder() {
     const preset = presetArray.find((item) => item.name === selectedPresetName)
 
     try {
-      delete preset.name
+      delete preset.name // Name of the preset doesn't get loaded into state
       loadObjectIntoContext(preset, ctx)
       setPresetName(selectedPresetName)
+      resetErrorState()
     } catch {
       return
     }
   }
 
+  // function currentToBase64() {
+  //   const { julia, viewport, color } = contextToValueObject(ctx)
+  //   const { colorPoints, curve, model } = color
+  //   const color2 = { colorPoints, curve, model }
+  //   const obj = { julia, viewport, color: color2 }
+  //   const base64 = btoa(JSON.stringify(obj))
+  //   console.log(base64)
+  // }
+
+  // function importBase64() {
+
+  // }
+
   function updateSelection(e) {
     setSelectedPresetName(e.target.value)
+    resetErrorState()
   }
 
   function updatePresetName(e) {
     setPresetName(e.target.value)
+    resetErrorState()
   }
 
   // Initial select element population
@@ -119,8 +146,9 @@ export default function PresetFolder() {
     <Folder title={title}>
       <PresetSelector options={presetsNames} value={selectedPresetName || ''} onChange={updateSelection} />
       <PresetNameField value={presetName} onChange={updatePresetName} />
-      <PresetButtons onClickSave={savePreset} onClickLoad={loadPreset} />
+      <SaveLoadButtons onClickSave={savePreset} onClickLoad={loadPreset} />
       <PresetErrorField text={error} />
+      {/* <ImportExportButtons onClickImport={() => null} onClickExport={currentToBase64} /> */}
     </Folder>
   )
 }

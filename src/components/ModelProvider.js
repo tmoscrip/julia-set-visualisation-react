@@ -19,9 +19,6 @@ export function contextToValueObject(obj) {
     if (isUseStateArray(obj[key])) {
       valuesObj[key] = obj[key][0]
     } else {
-      // TODO: Add check on recursion case
-      // Function seems to be recursing into DOM refs
-      // leading to stack overflows (only when deployed)
       valuesObj[key] = contextToValueObject(obj[key])
     }
   }

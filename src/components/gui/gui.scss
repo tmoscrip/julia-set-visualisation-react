@@ -29,17 +29,7 @@ $base-grey: #1a1a1a;
       background: #4a4a4a;
     }
   }
-
-  ul {
-    li {
-      padding-left: 0.4rem;
-
-      &:not(.folder) {
-        border-bottom: 1px solid #2c2c2c;
-      }
-    }
-  }
-
+  
   .title {
     cursor: pointer;
     color: white;
@@ -55,6 +45,11 @@ $base-grey: #1a1a1a;
     color: white;
     background: $base-grey;
     border-bottom: solid 1px rgba(0, 0, 0, 0.3);
+    padding: 0rem 0.4rem;
+
+    &:not(.folder) {
+      border-bottom: 1px solid #2c2c2c;
+    }
 
     label {
       padding-right: 0.5rem;
