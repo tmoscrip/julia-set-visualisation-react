@@ -18,6 +18,7 @@ import PauseButton from './gui/other/PauseButton'
 import PresetFolder from './gui/presets/PresetFolder'
 import { useToggle } from './Hooks'
 import ToggleMenuButton from './gui/other/ToggleMenuButton'
+import ColorMapRender from './gui/colourmapping/ColorMapRender';
 
 export default function MyGUI() {
   const [hideMenu, toggleMenu] = useToggle(false)
@@ -51,6 +52,7 @@ export default function MyGUI() {
           <ColorMapFolder />
           <ColorCurveSelector />
           <ColorModelSelector />
+          <ColorMapRender />
         </Folder>
         <PresetFolder />
       </div>
