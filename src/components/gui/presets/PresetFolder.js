@@ -5,6 +5,7 @@ import PresetButtons from './PresetButtons'
 import Folder from '../base_components/Folder'
 import PresetNameField from './PresetNameField'
 import PresetSelector from './PresetSelector'
+import PresetErrorField from './PresetErrorField'
 
 function makePresetObject(name, _ctx) {
   const ctx = contextToValueObject(_ctx)
@@ -18,9 +19,9 @@ function makePresetObject(name, _ctx) {
 }
 
 function namedPresetExists(name) {
-  const array = getPresetArray()
-  for (const preset in array) {
-    if (preset.name === name) {
+  const presets = getPresetArray()
+  for (const i in presets) {
+    if (presets[i].name === name) {
       return true
     }
   }
@@ -38,12 +39,19 @@ function addPresetToArray(preset) {
   localStorage.setItem('presets', JSON.stringify(array))
 }
 
+function removePresetFromArray(name) {
+  const presets = getPresetArray().filter((preset) => preset.name !== name)
+  localStorage.setItem('presets', JSON.stringify(presets))
+}
+
 export default function PresetFolder() {
   const ctx = useContext(ShaderContext)
-  const [selectedPreset, setSelectedPreset] = useState('')
+  const [selectedPresetName, setSelectedPresetName] = useState('')
   const [presetName, setPresetName] = useState('')
   const [presetsList, setPresetsList] = useState([])
-  const presetsNames = presetsList.map((item) => item.name)
+  const [promptedToOverwrite, setPromptedToOverwrite] = useState(false)
+  const [error, setError] = useState('')
+  const presetsNames = presetsList.map((item) => item.name).filter((name) => name !== undefined)
 
   const title = 'Presets'
 
@@ -54,37 +62,48 @@ export default function PresetFolder() {
 
   function setInitialSelectedPreset() {
     const initial = presetsList.length !== 0 ? presetsList[0].name : ''
-    setSelectedPreset(initial)
+    setSelectedPresetName(initial)
   }
 
   function savePreset() {
     if (presetName === '') {
-      // TODO: deny empty name
+      // Deny empty name
+      setError('Cannot save without entering a name')
+      return
     }
     if (namedPresetExists(presetName)) {
-      // TODO: ask to overwrite
+      // Ask to overwrite
+      if (!promptedToOverwrite) {
+        setPromptedToOverwrite(true)
+        setError('Click save again to overwrite existing preset')
+        return
+      }
+      // Delete existing preset with matching name
+      removePresetFromArray(presetName)
     }
     // Add and update list if all checks pass
     const presetObject = makePresetObject(presetName, ctx)
     addPresetToArray(presetObject)
     updatePresetsList()
+    setError('')
+    setPromptedToOverwrite(false)
   }
 
   function loadPreset() {
     const presetArray = getPresetArray()
-    const preset = presetArray.find((item) => item.name === selectedPreset)
+    const preset = presetArray.find((item) => item.name === selectedPresetName)
 
-    if (preset === undefined) {
-      throw new Error('Attempted to load unknown perset')
+    try {
+      delete preset.name
+      loadObjectIntoContext(preset, ctx)
+      setPresetName(selectedPresetName)
+    } catch {
+      return
     }
-
-    delete preset.name
-
-    loadObjectIntoContext(preset, ctx)
   }
 
   function updateSelection(e) {
-    setSelectedPreset(e.target.value)
+    setSelectedPresetName(e.target.value)
   }
 
   function updatePresetName(e) {
@@ -96,6 +115,7 @@ export default function PresetFolder() {
     updatePresetsList()
   }, [])
 
+  // Initial selected option in select element
   useEffect(() => {
     setInitialSelectedPreset()
     // eslint-disable-next-line react-hooks/exhaustive-deps
@@ -103,9 +123,10 @@ export default function PresetFolder() {
 
   return (
     <Folder title={title}>
-      <PresetSelector options={presetsNames} value={selectedPreset || ''} onChange={updateSelection} />
+      <PresetSelector options={presetsNames} value={selectedPresetName || ''} onChange={updateSelection} />
       <PresetNameField value={presetName} onChange={updatePresetName} />
       <PresetButtons onClickSave={savePreset} onClickLoad={loadPreset} />
+      <PresetErrorField text={error} />
     </Folder>
   )
 }
