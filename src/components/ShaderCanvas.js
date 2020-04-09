@@ -69,7 +69,6 @@ function useJuliaAnimation() {
       return
     }
 
-    setLastFrameTime(Date.now())
     // Advance time if not paused
     if (!paused) {
       const timeElapsedThisFrame = Date.now() - lastFrameTime
@@ -84,6 +83,7 @@ function useJuliaAnimation() {
     // of manipulations even while 'paused'
     const glObj = contextToValueObject(ctx)
     glDrawFrame(glObj)
+    setLastFrameTime(Date.now())
   }
 
   useEffect(() => {
