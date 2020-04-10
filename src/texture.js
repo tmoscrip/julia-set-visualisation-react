@@ -28,14 +28,14 @@ export function parseHexColor(colorString) {
 }
 
 export function generateTextureData(colorPoints, curveName, colorModel) {
-  const inputColorSpace = 'RGB'
+  const defaultColorSpace = 'RGB'
   const interp = Interps[curveName].fn
   const sortedColorPoints = colorPoints.sort((a, b) => parseFloat(a.position) - parseFloat(b.position))
   const sortedPositions = sortedColorPoints.map((a) => parseFloat(a.position))
 
   // Convert all colorPoints to target color space
   const convertedColorPoints =
-    colorModel !== inputColorSpace
+    colorModel !== defaultColorSpace
       ? sortedColorPoints.map((item) => {
           return { ...item, color: rgb2hsv(item.color) }
         })
@@ -70,18 +70,21 @@ export function generateTextureData(colorPoints, curveName, colorModel) {
   }
 
   // Convert back into RGB
-  const texRGB = colorModel !== inputColorSpace ? texLerp.map((item) => hsv2rgb(item)) : texLerp
+  const texRGB = colorModel !== defaultColorSpace ? texLerp.map((item) => hsv2rgb(item)) : texLerp
+  // Round to integers
+  const tex2D = mapNDArray(texRGB, (i) => Math.round(i))
   // Append alpha channel
-  const withAlpha = texRGB.map((item) => [...item, 255])
-
-  const tex2D = mapNDArray(withAlpha, (i) => Math.round(i))
+  const withAlpha = tex2D.map((item) => [...item, 255])
 
   const TEX_SIZE = TEX_WIDTH * TEX_CHANNELS
   const textureData = new Uint8Array(TEX_SIZE)
   for (let i = 0; i < TEX_SIZE; i++) {
-    let loc = Math.floor(i / TEX_CHANNELS)
+    // Pixel number
+    let px = Math.floor(i / TEX_CHANNELS)
+    // Channel number
     let chan = i % TEX_CHANNELS
-    textureData[i] = tex2D[loc][chan]
+    // Push into Uint8Array
+    textureData[i] = withAlpha[px][chan]
   }
 
   return textureData

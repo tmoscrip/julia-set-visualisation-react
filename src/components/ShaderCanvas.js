@@ -1,25 +1,30 @@
-import React, { useRef, useEffect, useContext, useState } from 'react'
-import { glDrawFrame } from '../webgl'
-import { ShaderContext, contextToValueObject } from './ModelProvider'
+import React, { useContext, useEffect, useRef, useState } from 'react'
+
 import { parseHexColor } from '../texture'
+import { glDrawFrame } from '../webgl'
+
 import { generateTextureData } from './../texture'
 import { useWindowSize } from './Hooks'
+import { contextToValueObject, ShaderContext } from './ModelProvider'
 
 export function scaleViewportByAspectRatio({ width, height, anchor }) {
   function getOrientation() {
-    const canvas = document.getElementsByClassName('glcanvas')[0]
+    const [canvas] = document.getElementsByClassName('glcanvas')
     const [canvasWidth, canvasHeight] = [canvas.offsetWidth, canvas.offsetHeight]
-    return canvasWidth > canvasHeight ? 'landscape' : 'portrait'
+    return canvasWidth > canvasHeight ?
+      'landscape' :
+      'portrait'
   }
 
   function getAspectRatio(orientation) {
-    const canvas = document.getElementsByClassName('glcanvas')[0]
+    const [canvas] = document.getElementsByClassName('glcanvas')
     const [canvasWidth, canvasHeight] = [canvas.offsetWidth, canvas.offsetHeight]
     // return early if 0 to avoid div by 0 errors
     if (canvasHeight === 0 || canvasWidth === 0) return 1
     if (orientation === 'landscape') {
       return canvasHeight / canvasWidth
-    } else if (orientation === 'portrait') {
+    }
+    else if (orientation === 'portrait') {
       return canvasWidth / canvasHeight
     }
     // Fallback if orientation does not match one of two expected values
@@ -32,22 +37,25 @@ export function scaleViewportByAspectRatio({ width, height, anchor }) {
   // For portrait, height should not change
   if (anchor === 'landscape') {
     height = width * aspectRatio
-  } else if (anchor === 'portrait') {
+  }
+  else if (anchor === 'portrait') {
     width = height * aspectRatio
   }
-  return { width, height }
+  return {
+    width, height
+  }
 }
 
 function useGlCanvas() {
   const ctx = useContext(ShaderContext)
 
   const canvasRef = useRef()
-  const setRef = ctx.canvasRef[1]
-  const setGl = ctx.gl[1]
+  const [, setRef] = ctx.canvasRef
+  const [, setGl] = ctx.gl
 
   useEffect(() => {
     setRef(canvasRef.current)
-    setGl(canvasRef.current.getContext('webgl'))
+    setGl(canvasRef.current.getContext('webgl', { preserveDrawingBuffer: true }))
   }, [setRef, setGl, canvasRef])
 
   return canvasRef
@@ -119,13 +127,34 @@ function useTextureBuilder() {
   useEffect(() => {
     const cp = colorPoints.map((o) => {
       return {
-        color: parseHexColor(o.hex),
-        position: o.position,
+        color: parseHexColor(o.hex), position: o.position,
       }
     })
     const newTextureData = generateTextureData(cp, curve, colorModel)
     setTextureData(newTextureData)
   }, [colorPoints, curve, colorModel, setTextureData])
+}
+
+function useCanvasImageSaver() {
+
+  function onDown(e) {
+    if (e.key.toLowerCase() === 'enter') {
+      const [canvas] = document.getElementsByClassName('glcanvas')
+
+      const dataURL = canvas.toDataURL('image/png')
+      const a = document.createElement("a")
+      a.href = dataURL
+      a.setAttribute("download", 'image.png')
+      a.click()
+    }
+  }
+
+  useEffect(() => {
+    window.addEventListener('keydown', onDown)
+    return () => {
+      window.removeEventListener('keydown', onDown)
+    }
+  }, [])
 }
 
 export default function ShaderCanvas() {
@@ -147,6 +176,9 @@ export default function ShaderCanvas() {
   // Start rendering
   useJuliaAnimation()
 
+  // Canvas save on keypress
+  useCanvasImageSaver()
+
   function startDrag(e) {
     const loc = [e.clientX, e.clientY]
     setDragStart(loc)
@@ -155,7 +187,7 @@ export default function ShaderCanvas() {
   function endDrag(e) {
     // Translate position values from the canvas to xy-coordinates on the grid
     function canvasToGrid({ x, y }) {
-      const canvas = document.getElementsByClassName('glcanvas')[0]
+      const [canvas] = document.getElementsByClassName('glcanvas')
       const [canvasWidth, canvasHeight] = [canvas.offsetWidth, canvas.offsetHeight]
 
       const gridWidth = parseFloat(ctx.viewport.width[0])
@@ -182,6 +214,7 @@ export default function ShaderCanvas() {
       return width < 1 || height < 1
     }
 
+
     const setTranslateX = ctx.viewport.translate.x[1]
     const setTranslateY = ctx.viewport.translate.y[1]
     const setViewportWidth = ctx.viewport.width[1]
@@ -197,8 +230,8 @@ export default function ShaderCanvas() {
     }
 
     // y values subtracted from canvas height to get correct locations
-    // canvas dimensions are measured from top left, need to start from bottom left
-    // as that's what our grid starts from
+    // canvas dimensions are measured from top left, need to start from bottom
+    // left as that's what our grid starts from
     const dragBox = {
       x1: dragStart[0],
       x2: dragEnd[0],
@@ -211,7 +244,10 @@ export default function ShaderCanvas() {
       return
     }
 
-    const dragCenterCanvas = { x: (dragBox.x1 + dragBox.x2) / 2, y: (dragBox.y1 + dragBox.y2) / 2 }
+    const dragCenterCanvas = {
+      x: (dragBox.x1 + dragBox.x2) / 2,
+      y: (dragBox.y1 + dragBox.y2) / 2
+    }
     const dragCenterGrid = canvasToGrid(dragCenterCanvas)
 
     setTranslateX(dragCenterGrid.x)
@@ -221,7 +257,10 @@ export default function ShaderCanvas() {
     const viewportWidth = parseFloat(ctx.viewport.width)
     const viewportHeight = parseFloat(ctx.viewport.height)
 
-    const dragDimensions = { width: Math.abs(dragBox.x1 - dragBox.x2), height: Math.abs(dragBox.y1 - dragBox.y2) }
+    const dragDimensions = {
+      width: Math.abs(dragBox.x1 - dragBox.x2),
+      height: Math.abs(dragBox.y1 - dragBox.y2)
+    }
     const dragViewport = {
       width: viewportWidth * (dragDimensions.width / canvasWidth),
       height: viewportHeight * (dragDimensions.height / canvasHeight),
@@ -231,7 +270,8 @@ export default function ShaderCanvas() {
       const newViewport = scaleViewportByAspectRatio(dragViewport)
       setViewportWidth(newViewport.width)
       setViewportHeight(newViewport.height)
-    } else {
+    }
+    else {
       setViewportWidth(dragViewport.width)
       setViewportHeight(dragViewport.height)
     }
@@ -245,7 +285,8 @@ export default function ShaderCanvas() {
         height={windowSize.height}
         onMouseDown={startDrag}
         onMouseUp={endDrag}
-        ref={canvasRef}
+        ref={
+          canvasRef}
       />
     </>
   )

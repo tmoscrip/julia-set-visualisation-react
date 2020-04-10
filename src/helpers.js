@@ -1,4 +1,4 @@
-// Map function which recurses into elements of initial array which are also arrays
+// Map function which recurses into elements of given array which are also arrays
 export function mapNDArray(arr, fn) {
   for (let i in arr) {
     let e = arr[i]

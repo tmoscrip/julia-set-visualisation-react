@@ -3,9 +3,9 @@ import './App.scss'
 import './components/gui/gui.scss'
 import ModelProvider from './components/ModelProvider'
 import ShaderCanvas from './components/ShaderCanvas'
-import MyGUI from './components/MyGUI';
+import MyGUI from './components/MyGUI'
 
-function App() {
+export default function App() {
   return (
     <div className='App'>
       <ModelProvider>
@@ -15,5 +15,3 @@ function App() {
     </div>
   )
 }
-
-export default App

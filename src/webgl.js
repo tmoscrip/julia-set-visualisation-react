@@ -122,7 +122,7 @@ function setUniforms(shaderProgram, ctx) {
   gl.uniform2fv(resolutionUniform, [canvasRef.width, canvasRef.height])
 
   const startedAtUniform = gl.getUniformLocation(shaderProgram, 'u_time')
-  gl.uniform1f(startedAtUniform, elapsed/5000)
+  gl.uniform1f(startedAtUniform, elapsed / 5000)
 
   const widthUniform = gl.getUniformLocation(shaderProgram, 'u_width')
   gl.uniform1f(widthUniform, viewport.width)
@@ -186,7 +186,7 @@ export function glDrawFrame(ctx) {
   gl.enable(gl.DEPTH_TEST)
 
   // Clear the color buffer bit
-  gl.clear(gl.COLOR_BUFFER_BIT)
+  gl.clear(gl.DEPTH_BUFFER_BIT)
 
   // Set the view port
   gl.viewport(0, 0, canvasRef.width, canvasRef.height)

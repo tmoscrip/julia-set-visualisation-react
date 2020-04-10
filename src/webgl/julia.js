@@ -1,7 +1,7 @@
-import { msaaOptions } from '../components/gui/julia/MSAA'
-import { fixWebGlInts } from './../helpers'
-import { color } from './color'
-import { math } from './math'
+import {msaaOptions} from '../components/gui/julia/MSAA'
+import {fixWebGlInts} from './../helpers'
+import {color} from './color'
+import {math} from './math'
 
 // GLSL 'for' loops can only be indexed up to a constant value
 // Passing in the max iteration count through a uniform encounters an error
@@ -10,26 +10,29 @@ function maxIterations(val) {
   return `#define maxIterations ${val}`
 }
 
-function cValue({ x, y }) {
+function cValue({x, y}) {
   return `vec2 c = vec2(${fixWebGlInts(x)}, ${fixWebGlInts(y)});`
 }
 
-function viewport({ width, height, translate }) {
+function viewport({width, height, translate}) {
   return `
   vec2 size = vec2(${fixWebGlInts(width)}, ${fixWebGlInts(height)});
-  vec2 translate = vec2(${fixWebGlInts(translate.x)}, ${fixWebGlInts(translate.y)});
+  vec2 translate = vec2(${fixWebGlInts(translate.x)}, ${
+      fixWebGlInts(translate.y)});
   `
 }
 
-const antialiasing = (msaaStateValue) => {
-  const { aaFrac } = msaaOptions.find((item) => item.name === msaaStateValue)
+const antialiasing =
+    (msaaStateValue) => {
+      const {aaFrac} = msaaOptions.find((item) => item.name === msaaStateValue)
 
-  if (aaFrac !== 1) {
-    return `#define AA ${aaFrac}`
-  } else {
-    return ''
-  }
-}
+      if (aaFrac !== 1) {
+        return `#define AA ${aaFrac}`
+      }
+      else {
+        return ''
+      }
+    }
 
 const uniforms = `
 uniform float u_escapeRadius;
@@ -51,35 +54,37 @@ precision highp float;
 //
 // JULIA ITERATION FUNCTIONS
 //
-const polyIterate = (coefficients) => {
-  function cmplxExp(exp, coeff) {
-    // Skip all terms with coefficient of 0
-    if (parseFloat(coeff) !== 0) {
-      // When exp = 0, we are handling the C value
-      if (exp === 0) {
-        return `z = complexAdd(z, ${coeff}*c);`
+const polyIterate =
+    (coefficients) => {
+      function cmplxExp(exp, coeff) {
+        // Skip all terms with coefficient of 0
+        if (parseFloat(coeff) !== 0) {
+          // When exp = 0, we are handling the C value
+          if (exp === 0) {
+            return `z = complexAdd(z, ${coeff}*c);`
+          }
+          // Use complexAdd instead of complexPower for exponent 1
+          if (exp === 1) {
+            return `z = complexAdd(z, ${coeff}*zPrev);`
+          }
+          return `z = complexAdd(z, complexPower(${coeff}*zPrev, vec2(${
+              exp}, 0.)));`
+        }
+        return ''
       }
-      // Use complexAdd instead of complexPower for exponent 1
-      if (exp === 1) {
-        return `z = complexAdd(z, ${coeff}*zPrev);`
-      }
-      return `z = complexAdd(z, complexPower(${coeff}*zPrev, vec2(${exp}, 0.)));`
-    }
-    return ''
-  }
 
-  // Remove all whitespace, split into list delimitted by commas
-  const coeffList = coefficients.replace(/\s/g, '').split(',')
-  let polySource = ''
-  for (let i = 0; i < coeffList.length; i++) {
-    const exp = coeffList.length - (i + 1)
-    const nextTerm = cmplxExp(exp, coeffList[i])
-    if (nextTerm !== '') {
-      polySource = polySource.concat(nextTerm, '\n')
+      // Remove all whitespace, split into list delimitted by commas
+      const coeffList = coefficients.replace(/\s/g, '').split(',')
+      let polySource = ''
+      for (let i = 0; i < coeffList.length; i++) {
+        const exp = coeffList.length - (i + 1)
+        const nextTerm = cmplxExp(exp, coeffList[i])
+        if (nextTerm !== '') {
+          polySource = polySource.concat(nextTerm, '\n')
+        }
+      }
+      return polySource
     }
-  }
-  return polySource
-}
 
 const julia = (ctx) => `
 vec4 julia(vec2 pixel) {
@@ -104,7 +109,9 @@ vec4 julia(vec2 pixel) {
   if (iters == maxIterations) {
     return vec4(0,0,0,1);
   } else {
-    ${ctx.julia.useSmoothing ? 'result = smoothIterations(z, iters);' : 'result = float(iters);'}
+    ${
+    ctx.julia.useSmoothing ? 'result = smoothIterations(z, iters);' :
+                             'result = float(iters);'}
   }
 
   float percent = result/float(maxIterations);
@@ -117,7 +124,7 @@ vec4 julia(vec2 pixel) {
 // https://en.wikipedia.org/wiki/Mandelbrot_set#Continuous_(smooth)_coloring
 // http://www.iquilezles.org/www/articles/mset_smooth/mset_smooth.htm
 function smoothIterations(julia) {
-  const { coefficients, escapeRadius } = julia
+  const {coefficients, escapeRadius} = julia
   const degree = (coefficients.match(/,/g) || []).length.toString()
 
   return `
