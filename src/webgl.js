@@ -160,7 +160,6 @@ export function glDrawFrame(ctx) {
   const vertexBuffer = bindVertices(gl)
   const indexBuffer = bindIndices(gl)
   const shaderProgram = createProgram(gl, fragCode)
-  console.log(fragCode)
   setUniforms(shaderProgram, ctx)
 
   /*======= Associating shaders to buffer objects =======*/
