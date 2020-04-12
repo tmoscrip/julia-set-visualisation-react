@@ -1,14 +1,14 @@
 {
   "files": {
     "main.css": "/julia-frontend/static/css/main.1382ebea.chunk.css",
-    "main.js": "/julia-frontend/static/js/main.a74438ae.chunk.js",
-    "main.js.map": "/julia-frontend/static/js/main.a74438ae.chunk.js.map",
+    "main.js": "/julia-frontend/static/js/main.125c3cab.chunk.js",
+    "main.js.map": "/julia-frontend/static/js/main.125c3cab.chunk.js.map",
     "runtime-main.js": "/julia-frontend/static/js/runtime-main.a642d25b.js",
     "runtime-main.js.map": "/julia-frontend/static/js/runtime-main.a642d25b.js.map",
     "static/js/2.67035ee5.chunk.js": "/julia-frontend/static/js/2.67035ee5.chunk.js",
     "static/js/2.67035ee5.chunk.js.map": "/julia-frontend/static/js/2.67035ee5.chunk.js.map",
     "index.html": "/julia-frontend/index.html",
-    "precache-manifest.d994f8a286075f8a5f65a9bf87747054.js": "/julia-frontend/precache-manifest.d994f8a286075f8a5f65a9bf87747054.js",
+    "precache-manifest.6662715d742c7bce45f7c0ed89ca107a.js": "/julia-frontend/precache-manifest.6662715d742c7bce45f7c0ed89ca107a.js",
     "service-worker.js": "/julia-frontend/service-worker.js",
     "static/css/main.1382ebea.chunk.css.map": "/julia-frontend/static/css/main.1382ebea.chunk.css.map",
     "static/js/2.67035ee5.chunk.js.LICENSE": "/julia-frontend/static/js/2.67035ee5.chunk.js.LICENSE"
@@ -17,6 +17,6 @@
     "static/js/runtime-main.a642d25b.js",
     "static/js/2.67035ee5.chunk.js",
     "static/css/main.1382ebea.chunk.css",
-    "static/js/main.a74438ae.chunk.js"
+    "static/js/main.125c3cab.chunk.js"
   ]
 }
