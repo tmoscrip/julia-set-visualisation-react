@@ -72,11 +72,11 @@ function ModelProvider({ children }) {
           position: '0',
         },
         {
-          hex: '#FF0000',
-          position: '0.3',
+          hex: '#3ad629',
+          position: '0.7',
         },
         {
-          hex: '#FFFF00',
+          hex: '#faaa05',
           position: '1.0',
         },
       ]),
