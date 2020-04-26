@@ -37,8 +37,8 @@ export function generateTextureData(colorPoints, curveName, colorModel) {
   const convertedColorPoints =
     colorModel !== defaultColorSpace
       ? sortedColorPoints.map((item) => {
-          return { ...item, color: rgb2hsv(item.color) }
-        })
+        return { ...item, color: rgb2hsv(item.color) }
+      })
       : sortedColorPoints
 
   // Peform interpolation on each channel in each color

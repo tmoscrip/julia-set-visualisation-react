@@ -16,8 +16,12 @@ export function findClosestPair(arr, num) {
   for (let i = 0; i < arr.length; i++) {
     let cur = arr[i]
     let next = arr[i + 1]
-    if (cur <= num && next > num) {
-      return [i, i + 1]
+    if (cur !== undefined && next !== undefined) {
+      if (cur <= num && next > num) {
+        return [i, i + 1]
+      }
+    } else { // Fallback, return first and last elements
+      return [0, arr.length - 1]
     }
   }
 }
