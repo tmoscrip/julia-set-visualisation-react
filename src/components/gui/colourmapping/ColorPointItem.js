@@ -19,6 +19,7 @@ function ColorPicker({ item, idx, handleChange }) {
 
 function ColorPosition({ item, idx, handleChange }) {
   const value = item.position
+  const locked = item.locked
   const label = 'Position'
   const name = 'position'
   const id = `${lowerTrim(label)}${idx}`
@@ -29,7 +30,7 @@ function ColorPosition({ item, idx, handleChange }) {
   }
 
   return (
-    <InputField type='text' label={label} name={name} id={id} tooltip={tooltip} value={value} onChange={onChange} />
+    <InputField disabled={locked} type='text' label={label} name={name} id={id} tooltip={tooltip} value={value} onChange={onChange} />
   )
 }
 

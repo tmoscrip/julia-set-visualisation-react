@@ -141,10 +141,6 @@ function setUniforms(shaderProgram, ctx) {
   gl.uniform1i(colormapUniform, texture)
 }
 
-function getMillisElapsed(startedAt, pauseDuration) {
-  return Date.now() - startedAt - pauseDuration
-}
-
 export function glDrawFrame(ctx) {
   const { canvasRef, gl } = ctx
 

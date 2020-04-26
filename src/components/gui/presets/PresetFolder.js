@@ -5,7 +5,7 @@ import Folder from '../base_components/Folder'
 import PresetNameField from './PresetNameField'
 import PresetSelector from './PresetSelector'
 import PresetErrorField from './PresetErrorField'
-import { ImportExportButtons, SaveLoadButtons } from './PresetButtons'
+import { SaveLoadButtons } from './PresetButtons'
 
 function makePresetObject(name, _ctx) {
   const ctx = contextToValueObject(_ctx)

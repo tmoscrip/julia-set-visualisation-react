@@ -124,7 +124,7 @@ vec4 julia(vec2 pixel) {
 // https://en.wikipedia.org/wiki/Mandelbrot_set#Continuous_(smooth)_coloring
 // http://www.iquilezles.org/www/articles/mset_smooth/mset_smooth.htm
 function smoothIterations(julia) {
-  const { coefficients, escapeRadius } = julia
+  const { coefficients } = julia
   const degree = (coefficients.match(/,/g) || []).length.toString()
 
   return `

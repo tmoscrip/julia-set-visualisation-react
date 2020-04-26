@@ -46,12 +46,12 @@ function ModelProvider({ children }) {
     canvasRef: useState(null), // Canvas element used for rendering the fractal
     gl: useState(null), // WebGL context of the canvas
     julia: {
-      coefficients: useState('1,1/3, c*2, 1 , 0, 1'),
+      coefficients: useState('1,0,1'),
       c: {
-        x: useState('0.2+0.5*cos(u_time*5)'),
-        y: useState('0.2-0.7*sin(u_time*3)'),
+        x: useState('0.02'),
+        y: useState('0'),
       },
-      maxIterations: useState('20'),
+      maxIterations: useState('30'),
       escapeRadius: useState('10'),
       useSmoothing: useState(true),
       msaa: useState('1x'),
@@ -68,16 +68,19 @@ function ModelProvider({ children }) {
     color: {
       colorPoints: useState([
         {
-          hex: '#000000',
+          hex: '#FFFFFF',
           position: '0',
+          locked: true,
         },
         {
           hex: '#3ad629',
           position: '0.7',
+          locked: false,
         },
         {
           hex: '#faaa05',
           position: '1.0',
+          locked: true
         },
       ]),
       curve: useState('linear'),

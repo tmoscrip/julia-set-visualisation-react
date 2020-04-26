@@ -16,4 +16,5 @@ export default function Label({ htmlFor, text, tooltip }) {
 Label.propTypes = {
   htmlFor: PropTypes.string.isRequired,
   text: PropTypes.string.isRequired,
+  tooltip: PropTypes.string,
 }
