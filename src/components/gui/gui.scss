@@ -60,13 +60,29 @@ $base-grey: #1a1a1a;
       width: 50%;
     }
 
+    .btn {
+      background-color: rgba(240, 240, 240, 1);
+      border: 1px solid white;
+      margin: 2px 0px;
+      border-radius: 4px;
+      padding: 0.25rem;
+    }
+
     .btn-full {
       width: 100%;
     }
 
     .btn-half {
-      width: 50%;
+      width: 45%;
+      margin: 0px 8px;
     }
+  }
+
+  .two-btn {
+    display: flex;
+    flex-direction: row;
+    align-items: center;
+    justify-content: center
   }
 
   .group {

@@ -33,7 +33,7 @@ export function PresetButtonExport({ onClick }) {
 
 export function SaveLoadButtons({ onClickSave, onClickLoad }) {
   return (
-    <Item>
+    <Item className='two-btn'>
       <PresetButtonSave onClick={onClickSave} />
       <PresetButtonLoad onClick={onClickLoad} />
     </Item>
@@ -47,7 +47,7 @@ SaveLoadButtons.propTypes = {
 
 export function ImportExportButtons({ onClickImport, onClickExport }) {
   return (
-    <Item>
+    <Item className='two-btn'>
       <PresetButtonImport onClick={onClickImport} />
       <PresetButtonExport onClick={onClickExport} />
     </Item>
