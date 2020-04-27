@@ -144,7 +144,9 @@ function useCanvasImageSaver() {
       const dataURL = canvas.toDataURL('image/png')
       const a = document.createElement("a")
       a.href = dataURL
-      a.setAttribute("download", 'image.png')
+      const date = new Date()
+      const filename = `Julia_${date.getDate()}-${date.getMonth()}-${date.getFullYear()}_${date.getHours()}-${date.getMinutes()}-${date.getSeconds()}`
+      a.setAttribute('download', `${filename}.png`)
       a.click()
     }
   }
