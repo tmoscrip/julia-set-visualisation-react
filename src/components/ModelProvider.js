@@ -45,6 +45,7 @@ function ModelProvider({ children }) {
   const initModelState = {
     canvasRef: useState(null), // Canvas element used for rendering the fractal
     gl: useState(null), // WebGL context of the canvas
+    showModal: useState(false),
     julia: {
       coefficients: useState('1,0,1'),
       c: {
