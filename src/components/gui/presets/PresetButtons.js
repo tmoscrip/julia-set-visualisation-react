@@ -18,15 +18,15 @@ export function PresetButtonLoad({ onClick }) {
 }
 
 export function PresetButtonImport({ onClick }) {
-  const text = 'Import'
-  const className = 'btn-half'
+  const text = 'Import from clipboard'
+  const className = 'btn-full'
 
   return <Button text={text} onClick={onClick} className={className} />
 }
 
 export function PresetButtonExport({ onClick }) {
-  const text = 'Export'
-  const className = 'btn-half'
+  const text = 'Export to clipboard'
+  const className = 'btn-full'
 
   return <Button text={text} onClick={onClick} className={className} />
 }
@@ -47,10 +47,14 @@ SaveLoadButtons.propTypes = {
 
 export function ImportExportButtons({ onClickImport, onClickExport }) {
   return (
-    <Item className='two-btn'>
-      <PresetButtonImport onClick={onClickImport} />
-      <PresetButtonExport onClick={onClickExport} />
-    </Item>
+    <>
+      <Item>
+        <PresetButtonImport onClick={onClickImport} />
+      </Item>
+      <Item>
+        <PresetButtonExport onClick={onClickExport} />
+      </Item>
+    </>
   )
 }
 

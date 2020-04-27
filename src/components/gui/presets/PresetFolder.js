@@ -1,11 +1,13 @@
-import React, { useContext, useEffect, useState } from 'react'
+import React, { useContext, useEffect, useState, useRef } from 'react'
 import { contextToValueObject } from '../../ModelProvider'
 import { loadObjectIntoContext, ShaderContext } from './../../ModelProvider'
 import Folder from '../base_components/Folder'
 import PresetNameField from './PresetNameField'
 import PresetSelector from './PresetSelector'
 import PresetErrorField from './PresetErrorField'
-import { SaveLoadButtons } from './PresetButtons'
+import { SaveLoadButtons, ImportExportButtons } from './PresetButtons'
+import { ClipboardDOM } from './ClipboardDOM';
+
 
 function makePresetObject(name, _ctx) {
   const ctx = contextToValueObject(_ctx)
@@ -51,9 +53,10 @@ export default function PresetFolder() {
   const [presetsList, setPresetsList] = useState([])
   const [promptedToOverwrite, setPromptedToOverwrite] = useState(false)
   const [error, setError] = useState('')
-  const presetsNames = presetsList.map((item) => item.name).filter((name) => name !== undefined)
+  const clipboardInputRef = useRef()
 
   const title = 'Presets'
+  const presetsNames = presetsList.map((item) => item.name).filter((name) => name !== undefined)
 
   function updatePresetsList() {
     const presets = getPresetArray()
@@ -104,22 +107,36 @@ export default function PresetFolder() {
       setPresetName(selectedPresetName)
       resetErrorState()
     } catch {
-      return
+      alert('Unable to load preset')
     }
   }
 
-  // function currentToBase64() {
-  //   const { julia, viewport, color } = contextToValueObject(ctx)
-  //   const { colorPoints, curve, model } = color
-  //   const color2 = { colorPoints, curve, model }
-  //   const obj = { julia, viewport, color: color2 }
-  //   const base64 = btoa(JSON.stringify(obj))
-  //   console.log(base64)
-  // }
+  function currentToBase64() {
+    const { julia, viewport, color } = contextToValueObject(ctx)
+    const { colorPoints, curve, model } = color
+    const color2 = { colorPoints, curve, model }
+    const obj = { julia, viewport, color: color2 }
+    const base64 = btoa(JSON.stringify(obj))
+    const clipboardElement = clipboardInputRef.current
+    clipboardElement.value = base64
+    clipboardElement.setAttribute('text', base64)
+    clipboardElement.select()
+    document.execCommand("copy")
+  }
 
-  // function importBase64() {
-
-  // }
+  function importBase64() {
+    const clipboardElement = clipboardInputRef.current
+    navigator.clipboard.readText().then(text => {
+      clipboardElement.value = text
+      clipboardElement.setAttribute('text', text)
+      try {
+        const json = JSON.parse(atob(clipboardElement.value))
+        loadObjectIntoContext(json, ctx)
+      } catch {
+        alert('Unable to import data')
+      }
+    });
+  }
 
   function updateSelection(e) {
     setSelectedPresetName(e.target.value)
@@ -148,7 +165,8 @@ export default function PresetFolder() {
       <PresetNameField value={presetName} onChange={updatePresetName} />
       <SaveLoadButtons onClickSave={savePreset} onClickLoad={loadPreset} />
       <PresetErrorField text={error} />
-      {/* <ImportExportButtons onClickImport={() => null} onClickExport={currentToBase64} /> */}
+      <ImportExportButtons onClickImport={importBase64} onClickExport={currentToBase64} />
+      <ClipboardDOM ref={clipboardInputRef} />
     </Folder>
   )
 }
