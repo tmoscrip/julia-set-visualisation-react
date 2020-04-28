@@ -107,6 +107,7 @@ function useScaleInitialRenderViewport() {
   const ctx = useContext(ShaderContext)
   const [width, setWidth] = ctx.viewport.width
   const [height, setHeight] = ctx.viewport.height
+  const windowSize = useWindowSize()
 
   useEffect(() => {
     const newViewport = scaleViewportByAspectRatio({ width, height })
@@ -114,6 +115,30 @@ function useScaleInitialRenderViewport() {
     setHeight(newViewport.height)
     // Effect can't fire when width/height changes, results in loop
     // eslint-disable-next-line react-hooks/exhaustive-deps
+  }, [windowSize])
+}
+
+function useRightClickReset() {
+  const ctx = useContext(ShaderContext)
+  const [width, setWidth] = ctx.viewport.width
+  const [height, setHeight] = ctx.viewport.height
+  const [transX, setTransX] = ctx.viewport.translate.x
+  const [transY, setTransY] = ctx.viewport.translate.y
+
+  function resetZoom(e) {
+    e.preventDefault()
+    const newViewport = scaleViewportByAspectRatio({ width: 5, height: 5 })
+    setWidth(newViewport.width)
+    setHeight(newViewport.height)
+    setTransX('0')
+    setTransY('0')
+  }
+
+  useEffect(() => {
+    window.addEventListener('contextmenu', resetZoom)
+    return () => {
+      window.removeEventListener('contextmenu', resetZoom)
+    }
   }, [])
 }
 
@@ -180,6 +205,9 @@ export default function ShaderCanvas() {
 
   // Canvas save on keypress
   useCanvasImageSaver()
+
+  // Right click reset viewport
+  useRightClickReset()
 
   function startDrag(e) {
     const loc = [e.clientX, e.clientY]

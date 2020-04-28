@@ -21,6 +21,7 @@ export default function Modal() {
       <div className='spacer' />
       <p>Drag a box on the canvas to zoom to that area</p>
       <p>Hit 'Enter' to save a screenshot of the current canvas</p>
+      <p>Right click to reset zoom/translate to the default</p>
       <p>Refer to the GUI help tooltips for more information</p>
       <div className='spacer' />
       <CloseModalButton onClick={close} />
