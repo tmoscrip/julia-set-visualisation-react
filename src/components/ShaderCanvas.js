@@ -120,10 +120,10 @@ function useScaleInitialRenderViewport() {
 
 function useRightClickReset() {
   const ctx = useContext(ShaderContext)
-  const [width, setWidth] = ctx.viewport.width
-  const [height, setHeight] = ctx.viewport.height
-  const [transX, setTransX] = ctx.viewport.translate.x
-  const [transY, setTransY] = ctx.viewport.translate.y
+  const [, setWidth] = ctx.viewport.width
+  const [, setHeight] = ctx.viewport.height
+  const [, setTransX] = ctx.viewport.translate.x
+  const [, setTransY] = ctx.viewport.translate.y
 
   function resetZoom(e) {
     e.preventDefault()
@@ -139,6 +139,7 @@ function useRightClickReset() {
     return () => {
       window.removeEventListener('contextmenu', resetZoom)
     }
+    // eslint-disable-next-line react-hooks/exhaustive-deps
   }, [])
 }
 

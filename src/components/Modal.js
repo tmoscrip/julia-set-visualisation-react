@@ -11,7 +11,7 @@ export default function Modal() {
 
   const className = showModal ? 'show' : ''
 
-  function close(e) {
+  function closeModal() {
     setShowModal(false)
   }
 
@@ -24,7 +24,7 @@ export default function Modal() {
       <p>Right click to reset zoom/translate to the default</p>
       <p>Refer to the GUI help tooltips for more information</p>
       <div className='spacer' />
-      <CloseModalButton onClick={close} />
+      <CloseModalButton onClick={closeModal} />
     </div>
   )
 }
