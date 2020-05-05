@@ -1,4 +1,4 @@
-import React, { useContext } from 'react'
+import React, { useContext, useState, useEffect } from 'react'
 import Base64Image from '../base_components/Base64Image'
 import Item from '../base_components/Item'
 import { ShaderContext } from './../../ModelProvider'
@@ -8,17 +8,21 @@ import { TEX_WIDTH, TEX_HEIGHT } from './../../../texture'
 function useColorMapBase64() {
   const ctx = useContext(ShaderContext)
   const [textureData] = ctx.color.textureData
+  const [base64, setBase64] = useState()
 
-  if (textureData.length >= 4) {
-    const pngArrayBuffer = UPNG.encode(textureData, TEX_WIDTH, TEX_HEIGHT, 0, [])
-    return btoa(String.fromCharCode.apply(null, new Uint8Array(pngArrayBuffer)))
-  }
+  useEffect(() => {
+    if (textureData.length >= 4) {
+      const pngArrayBuffer = UPNG.encode(textureData, TEX_WIDTH, TEX_HEIGHT, 0, [])
+      setBase64(btoa(String.fromCharCode.apply(null, new Uint8Array(pngArrayBuffer))))
+    }
+  }, [textureData])
 
-  return null
+  return base64
 }
 
 export default function ColorMapRender() {
   const encoding = 'png'
+
   const data = useColorMapBase64()
 
   return data !== null ? (
