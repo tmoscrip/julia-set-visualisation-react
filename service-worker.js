@@ -14,7 +14,7 @@
 importScripts("https://storage.googleapis.com/workbox-cdn/releases/4.3.1/workbox-sw.js");
 
 importScripts(
-  "/julia-frontend/precache-manifest.d52c7f2af651a814952ca1290ff1dedd.js"
+  "/julia-frontend/precache-manifest.20a4a34bb2952c6a41a0ddf7e3850237.js"
 );
 
 self.addEventListener('message', (event) => {
