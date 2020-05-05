@@ -54,37 +54,34 @@ precision highp float;
 //
 // JULIA ITERATION FUNCTIONS
 //
-const polyIterate =
-  (coefficients) => {
-    function cmplxExp(exp, coeff) {
-      // Skip all terms with coefficient of 0
-      if (parseFloat(coeff) !== 0) {
-        // When exp = 0, we are handling the C value
-        if (exp === 0) {
-          return `z = complexAdd(z, ${coeff}*c);`
-        }
-        // Use complexAdd instead of complexPower for exponent 1
-        if (exp === 1) {
-          return `z = complexAdd(z, ${coeff}*zPrev);`
-        }
-        return `z = complexAdd(z, complexPower(${coeff}*zPrev, vec2(${
-          exp}, 0.)));`
-      }
-      return ''
+const polyIterate = (coefficients) => {
+  function cmplxExp(exp, coeff) {
+    // Skip all terms with coefficient of 0
+    if (parseFloat(coeff) !== 0) {
+      // When exp = 0, we are handling the C value
+      if (exp === 0) return `z = complexAdd(z, ${coeff}*c);`
+      // Use complexAdd instead of complexPower for exponent 1
+      if (exp === 1) return `z = complexAdd(z, ${coeff}*zPrev);`
+      // Exponent >1, calculate power and add
+      return `z = complexAdd(z, complexPower(${coeff}*zPrev, vec2(${exp}, 0.)));`
     }
-
-    // Remove all whitespace, split into list delimitted by commas
-    const coeffList = coefficients.replace(/\s/g, '').split(',')
-    let polySource = ''
-    for (let i = 0; i < coeffList.length; i++) {
-      const exp = coeffList.length - (i + 1)
-      const nextTerm = cmplxExp(exp, coeffList[i])
-      if (nextTerm !== '') {
-        polySource = polySource.concat(nextTerm, '\n')
-      }
-    }
-    return polySource
+    // Coefficient === 0, no code needs adding
+    return ''
   }
+
+  // Remove all whitespace, split into list delimitted by commas
+  const coeffList = coefficients.replace(/\s/g, '').split(',')
+  let polySource = ''
+  // Iterate over list of coefficients
+  for (let i = 0; i < coeffList.length; i++) {
+    const exp = coeffList.length - (i + 1) // Get exponent
+    const nextTerm = cmplxExp(exp, coeffList[i]) // Get line of GLSL to add
+    if (nextTerm !== '') {
+      polySource = polySource.concat(nextTerm, '\n') // Add line to source
+    }
+  }
+  return polySource
+}
 
 const julia = (ctx) => `
 vec4 julia(vec2 pixel) {

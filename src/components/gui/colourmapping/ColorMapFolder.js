@@ -1,7 +1,6 @@
 import React, { useContext } from 'react'
 import { ShaderContext } from './../../ModelProvider'
 import Folder from '../base_components/Folder'
-import ColorPointControls from './ColorPointControls'
 import ColorPointItem from './ColorPointItem'
 
 export default function ColorMapFolder() {
@@ -34,7 +33,6 @@ export default function ColorMapFolder() {
 
   return (
     <Folder title='Colour Points'>
-      <ColorPointControls />
       {colorPoints.map((item, idx) => (
         <ColorPointItem item={item} key={idx} idx={idx} handleChange={handleColorPointChanges} />
       ))}
