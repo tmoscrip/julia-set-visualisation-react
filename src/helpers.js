@@ -71,7 +71,7 @@ export function fixWebGlInts(str) {
       finalStr = finalStr.slice(0, insertAt) + '.' + finalStr.slice(insertAt, finalStr.length)
       insertedCount += 1
     }
-  } catch {
+  } catch(err) {
     // Shader will fail to compile and pause given an unfixable string
     return str
   }

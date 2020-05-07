@@ -20,6 +20,7 @@ import { useToggle } from './Hooks'
 import ToggleMenuButton from './gui/other/ToggleMenuButton'
 import ColorMapRender from './gui/colourmapping/ColorMapRender';
 import HelpButton from './gui/other/HelpButton'
+import ScreenshotButton from './gui/other/ScreenshotButton'
 
 export default function MyGUI() {
   const [hideMenu, toggleMenu] = useToggle(false)
@@ -29,6 +30,7 @@ export default function MyGUI() {
       <PauseButton />
       <ToggleMenuButton onClick={toggleMenu} />
       <HelpButton />
+      <ScreenshotButton />
       <div style={{ display: hideMenu ? 'none' : 'inherit' }}>
         <Folder title='Julia Variables'>
           <Coefficients />

@@ -22,8 +22,7 @@ function viewport({ width, height, translate }) {
   `
 }
 
-const antialiasing =
-  (msaaStateValue) => {
+const antialiasing = (msaaStateValue) => {
     const { aaFrac } = msaaOptions.find((item) => item.name === msaaStateValue)
 
     if (aaFrac !== 1) {

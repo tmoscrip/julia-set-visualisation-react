@@ -7,6 +7,7 @@ import PresetSelector from './PresetSelector'
 import PresetErrorField from './PresetErrorField'
 import { SaveLoadButtons, ImportExportButtons } from './PresetButtons'
 import { ClipboardDOM } from './ClipboardDOM';
+import { defaultPresets } from './defaultPresets'
 
 
 function makePresetObject(name, _ctx) {
@@ -45,6 +46,7 @@ function removePresetFromArray(name) {
   const presets = getPresetArray().filter((preset) => preset.name !== name)
   localStorage.setItem('presets', JSON.stringify(presets))
 }
+
 
 export default function PresetFolder() {
   const ctx = useContext(ShaderContext)
@@ -106,7 +108,7 @@ export default function PresetFolder() {
       loadObjectIntoContext(preset, ctx)
       setPresetName(selectedPresetName)
       resetErrorState()
-    } catch {
+    } catch (err) {
       alert('Unable to load preset')
     }
   }
@@ -132,7 +134,7 @@ export default function PresetFolder() {
       try {
         const json = JSON.parse(atob(clipboardElement.value))
         loadObjectIntoContext(json, ctx)
-      } catch {
+      } catch (err) {
         alert('Unable to import data')
       }
     });
@@ -147,6 +149,13 @@ export default function PresetFolder() {
     setPresetName(e.target.value)
     resetErrorState()
   }
+
+  // Populate presets with default configs if empty/first load
+  useEffect(() => {
+    if (presetsList.length === 0) {
+      localStorage.setItem('presets', JSON.stringify(defaultPresets))
+    }
+  })
 
   // Initial select element population
   useEffect(() => {

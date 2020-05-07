@@ -7,6 +7,17 @@ import { generateTextureData } from './../texture'
 import { useWindowSize } from './Hooks'
 import { contextToValueObject, ShaderContext } from './ModelProvider'
 
+export function saveCanvasAsImage() {
+  const [canvas] = document.getElementsByClassName('glcanvas')
+  const dataURL = canvas.toDataURL('image/png')
+  const a = document.createElement("a")
+  a.href = dataURL
+  const date = new Date()
+  const filename = `Julia_${date.getDate()}-${date.getMonth()}-${date.getFullYear()}_${date.getHours()}-${date.getMinutes()}-${date.getSeconds()}`
+  a.setAttribute('download', `${filename}.png`)
+  a.click()
+}
+
 export function scaleViewportByAspectRatio({ width, height, anchor }) {
   function getOrientation() {
     const [canvas] = document.getElementsByClassName('glcanvas')
@@ -164,16 +175,9 @@ function useTextureBuilder() {
 function useCanvasImageSaver() {
 
   function onDown(e) {
-    if (e.key.toLowerCase() === 'enter') {
-      const [canvas] = document.getElementsByClassName('glcanvas')
-
-      const dataURL = canvas.toDataURL('image/png')
-      const a = document.createElement("a")
-      a.href = dataURL
-      const date = new Date()
-      const filename = `Julia_${date.getDate()}-${date.getMonth()}-${date.getFullYear()}_${date.getHours()}-${date.getMinutes()}-${date.getSeconds()}`
-      a.setAttribute('download', `${filename}.png`)
-      a.click()
+    console.log(e.key)
+    if (e.key.toLowerCase() === 'f4') {
+      saveCanvasAsImage()
     }
   }
 
