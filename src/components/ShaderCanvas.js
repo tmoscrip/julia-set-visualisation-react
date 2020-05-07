@@ -175,7 +175,6 @@ function useTextureBuilder() {
 function useCanvasImageSaver() {
 
   function onDown(e) {
-    console.log(e.key)
     if (e.key.toLowerCase() === 'f4') {
       saveCanvasAsImage()
     }
